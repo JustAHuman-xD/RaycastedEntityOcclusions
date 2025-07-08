@@ -5,18 +5,9 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.command.CommandExecutor;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 public class RaycastedEntityOcclusion extends JavaPlugin implements CommandExecutor {
     private ConfigManager cfg;
@@ -30,10 +21,10 @@ public class RaycastedEntityOcclusion extends JavaPlugin implements CommandExecu
     public void onEnable() {
         cfg = new ConfigManager(this);
         snapMgr = new ChunkSnapshotManager(this);
-        tracker = new MovementTracker(this);
+        tracker = new MovementTracker(this, cfg);
         commands = new CommandsManager(this, cfg);
         getServer().getPluginManager().registerEvents(new SnapshotListener(snapMgr), this);
-        getServer().getPluginManager().registerEvents(new UpdateChecker(this), this);
+        getServer().getPluginManager().registerEvents(new UpdateChecker(this, cfg), this);
 
         //Brigadier API
         LiteralCommandNode<CommandSourceStack> buildCommand = commands.registerCommand();
@@ -61,7 +52,7 @@ public class RaycastedEntityOcclusion extends JavaPlugin implements CommandExecu
                 Engine.runEngine(cfg, snapMgr, tracker, RaycastedEntityOcclusion.this);
                 Engine.runTileEngine(cfg, snapMgr, tracker, RaycastedEntityOcclusion.this);
             }
-        }.runTaskTimer(this, 0L, 1L);
+        }.runTaskTimer(this, 0L, cfg.engineRate);
     }
 
     public ConfigManager getConfigManager() {

@@ -14,16 +14,17 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MovementTracker {
     private final Map<Player, Deque<Location>> history = new ConcurrentHashMap<>();
 
-    public MovementTracker(Plugin plugin) {
+    public MovementTracker(Plugin plugin, ConfigManager cfg) {
         new BukkitRunnable() {
             @Override
             public void run() {
+                if (cfg.engineMode != 2) return;
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     history.computeIfAbsent(p, k -> new ArrayDeque<>(5));
                     Deque<Location> dq = history.get(p);
                     if (dq.size() >= 5) dq.removeFirst();
 
-                    dq.addLast(p.getEyeLocation().clone());
+                    dq.addLast(p.getEyeLocation());
                 }
             }
         }.runTaskTimer(plugin, 1L, 1L);

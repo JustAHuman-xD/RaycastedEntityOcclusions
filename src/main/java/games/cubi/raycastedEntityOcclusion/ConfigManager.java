@@ -7,6 +7,7 @@ public class ConfigManager {
     private final JavaPlugin plugin;
     public int snapshotRefreshInterval;
     public int engineMode;
+    public int engineRate;
     public int maxOccludingCount;
     public boolean debugMode;
     public int alwaysShowRadius;
@@ -17,6 +18,7 @@ public class ConfigManager {
     public int recheckInterval;
     public boolean checkTileEntities;
     public int tileEntityRecheckInterval;
+    public boolean checkForUpdates;
     public FileConfiguration cfg;
 
     public ConfigManager(JavaPlugin plugin) {
@@ -31,6 +33,7 @@ public class ConfigManager {
 
         snapshotRefreshInterval = cfg.getInt("snapshot-refresh-interval", 60);
         engineMode = cfg.getInt("engine-mode", 1);
+        engineRate = cfg.getInt("engine-rate", 1);
         maxOccludingCount = cfg.getInt("max-occluding-count", 3);
         debugMode = cfg.getBoolean("debug-mode", false);
 
@@ -44,9 +47,12 @@ public class ConfigManager {
         checkTileEntities = cfg.getBoolean("check-tile-entities", false);
         tileEntityRecheckInterval = cfg.getInt("tile-entity-recheck-interval", 0);
 
+        checkForUpdates = cfg.getBoolean("check-for-updates", true);
+
         // Write defaults if missing
         cfg.addDefault("snapshot-refresh-interval", 60);
         cfg.addDefault("engine-mode", 1);
+        cfg.addDefault("engine-rate", 1);
         cfg.addDefault("max-occluding-count", 3);
         cfg.addDefault("debug-mode", false);
         cfg.addDefault("always-show-radius", 8);
@@ -57,6 +63,7 @@ public class ConfigManager {
         cfg.addDefault("recheck-interval", 20);
         cfg.addDefault("check-tile-entities", false);
         cfg.addDefault("tile-entity-recheck-interval", 0);
+        cfg.addDefault("check-for-updates", true);
         cfg.options().copyDefaults(true);
         plugin.saveConfig();
     }

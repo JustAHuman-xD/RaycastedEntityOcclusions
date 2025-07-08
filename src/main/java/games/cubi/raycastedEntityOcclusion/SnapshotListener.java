@@ -2,6 +2,7 @@ package games.cubi.raycastedEntityOcclusion;
 
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
@@ -16,27 +17,27 @@ public class SnapshotListener implements Listener {
         this.manager = mgr;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onChunkLoad(ChunkLoadEvent e) {
         manager.onChunkLoad(e.getChunk());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onChunkUnload(ChunkUnloadEvent e) {
         manager.onChunkUnload(e.getChunk());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlace(BlockPlaceEvent e) {
         manager.onBlockChange(e.getBlock().getLocation(), e.getBlock().getType());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBreak(BlockBreakEvent e) {
         manager.onBlockChange(e.getBlock().getLocation(), Material.AIR);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBurn(BlockBurnEvent e) {
         manager.onBlockChange(e.getBlock().getLocation(), Material.AIR);
     }

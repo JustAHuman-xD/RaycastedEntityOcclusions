@@ -4,43 +4,35 @@ package games.cubi.raycastedEntityOcclusion;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.kyori.adventure.audience.Audience;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 
 
-public class UpdateChecker implements org.bukkit.event.Listener {
+public class UpdateChecker implements Listener {
     private final RaycastedEntityOcclusion plugin;
+    private final ConfigManager cfg;
 
-    public UpdateChecker(RaycastedEntityOcclusion plugin) {
+    public UpdateChecker(RaycastedEntityOcclusion plugin, ConfigManager cfg) {
         this.plugin = plugin;
-        checkForUpdates(plugin, Bukkit.getConsoleSender());
-    }
-
-    public void checkForUpdates() {
+        this.cfg = cfg;
+        if (cfg.checkForUpdates) {
+            checkForUpdates(plugin, Bukkit.getConsoleSender());
+        }
     }
 
     public static CompletableFuture<String> fetchFeaturedVersion(RaycastedEntityOcclusion plugin) {
         CompletableFuture<String> future = new CompletableFuture<>();
-
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-
             final String url = "https://api.modrinth.com/v2/project/raycasted-entity-occlusions/version?featured=true";
             try (final InputStreamReader reader = new InputStreamReader(new URL(url).openConnection().getInputStream())) {
                 final JsonArray array = new JsonArray();
@@ -69,14 +61,14 @@ public class UpdateChecker implements org.bukkit.event.Listener {
         return future;
     }
 
-    //on join
     @EventHandler
-    public void onPlayerJoin(org.bukkit.event.player.PlayerJoinEvent event) {
-        if (event.getPlayer().hasPermission("raycastedentityocclusions.updatecheck")) {
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        if (cfg.checkForUpdates && event.getPlayer().hasPermission("raycastedentityocclusions.updatecheck")) {
             Player sender = event.getPlayer();
             checkForUpdates(plugin, sender);
         }
     }
+
     public static void checkForUpdates(RaycastedEntityOcclusion plugin, CommandSender audience) {
         fetchFeaturedVersion(plugin).thenAccept(version -> {
             // This runs asynchronously when the version is fetched
