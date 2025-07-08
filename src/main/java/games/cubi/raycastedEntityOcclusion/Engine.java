@@ -65,12 +65,12 @@ public class Engine {
                 }
 
                 Location target = e.getLocation().add(0, e.getHeight() / 2, 0).clone();
-                double dist = eye.distance(target);
-                if (dist <= cfg.alwaysShowRadius) {
+                double distSqr = eye.distanceSquared(target);
+                if (distSqr <= cfg.alwaysShowRadius * cfg.alwaysShowRadius) {
                     if (!seen) {
                         p.showEntity(plugin, e);
                     }
-                } else if (dist > cfg.raycastRadius) {
+                } else if (distSqr > cfg.raycastRadius & cfg.raycastRadius > 0) {
                     if (seen) {
                         p.hideEntity(plugin, e);
                     }

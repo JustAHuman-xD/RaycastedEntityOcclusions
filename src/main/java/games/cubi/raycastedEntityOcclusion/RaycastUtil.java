@@ -9,10 +9,9 @@ public class RaycastUtil {
     private static final Particle.DustOptions GREEN = new Particle.DustOptions(org.bukkit.Color.GREEN, 1f);
 
     public static boolean raycast(Location start, Location end, int maxOccluding, boolean debug, ChunkSnapshotManager snap) {
-        double total = start.distanceSquared(end);
         Location curr = start.clone();
         Vector dir = end.toVector().subtract(start.toVector()).normalize();
-        while (curr.distanceSquared(end) < total) {
+        while (curr.distanceSquared(end) > 0) {
             curr.add(dir);
             if (snap.isOccluding(curr)) {
                 if (debug) {

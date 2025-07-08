@@ -1,4 +1,6 @@
 package games.cubi.raycastedEntityOcclusion.util;
 
-public record ChunkPos(byte world, long chunk) {
+import java.util.UUID;
+
+public record ChunkPos(UUID world, long chunk) {
 }
