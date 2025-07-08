@@ -48,11 +48,13 @@ public class RaycastedEntityOcclusion extends JavaPlugin implements CommandExecu
         new BukkitRunnable() {
             @Override
             public void run() {
+                if (tick % cfg.engineRate == 0) {
+                    Engine.runEngine(cfg, snapMgr, tracker, RaycastedEntityOcclusion.this);
+                    Engine.runTileEngine(cfg, snapMgr, tracker, RaycastedEntityOcclusion.this);
+                }
                 tick++;
-                Engine.runEngine(cfg, snapMgr, tracker, RaycastedEntityOcclusion.this);
-                Engine.runTileEngine(cfg, snapMgr, tracker, RaycastedEntityOcclusion.this);
             }
-        }.runTaskTimer(this, 0L, cfg.engineRate);
+        }.runTaskTimer(this, 1L, 1);
     }
 
     public ConfigManager getConfigManager() {

@@ -12,11 +12,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ChunkSnapshotManager {
     public static class Data {
-        public final Set<BlockPos> occluding = ConcurrentHashMap.newKeySet();
+        public final ChunkSnapshot snapshot;
+        public final Map<BlockPos, Boolean> occluding = new ConcurrentHashMap<>();
         public final Set<BlockPos> tileEntities = ConcurrentHashMap.newKeySet();
         public long lastRefresh;
 
-        public Data(long time) {
+        public Data(ChunkSnapshot snapshot, long time) {
+            this.snapshot = snapshot;
             this.lastRefresh = time;
         }
     }
@@ -79,11 +81,7 @@ public class ChunkSnapshotManager {
         if (d != null) {
             BlockPos pos = BlockPos.fromLocation(loc);
             boolean occluding = m.isOccluding();
-            if (occluding) {
-                d.occluding.add(pos);
-            } else {
-                d.occluding.remove(pos);
-            }
+            d.occluding.put(pos, occluding);
 
             if (cfg.checkTileEntities) {
                 // Check if the block is a tile entity
@@ -104,33 +102,28 @@ public class ChunkSnapshotManager {
     }
 
     private void takeSnapshot(Chunk c, long now) {
-        Data data = new Data(now);
+        ChunkSnapshot snapshot = c.getChunkSnapshot(true, false, false, false);
+        Data data = new Data(snapshot, now);
         dataMap.put(key(c), data);
 
-        ChunkSnapshot snapshot = c.getChunkSnapshot(true, false, false, false);
-        int min = c.getWorld().getMinHeight();
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            int chunkX = c.getX() * 16;
-            int chunkZ = c.getZ() * 16;
-            for (int x = 0; x < 16; x++) {
-                for (int z = 0; z < 16; z++) {
-                    int max = snapshot.getHighestBlockYAt(x, z) + 1;
-                    for (int y = min; y < max; y++) {
-                        BlockData blockData = snapshot.getBlockData(x, y, z);
-                        BlockPos pos = new BlockPos(x + chunkX, y, z + chunkZ);
-                        if (blockData.isOccluding()) {
-                            data.occluding.add(pos);
-                        }
-                        if (cfg.checkTileEntities) {
-                            Material mat = blockData.getMaterial();
-                            if (!mat.isEmpty() && mat != Material.BEACON) {
-                                data.tileEntities.add(pos);
+        if (cfg.checkTileEntities) {
+            int min = c.getWorld().getMinHeight();
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                int chunkX = c.getX() * 16;
+                int chunkZ = c.getZ() * 16;
+                for (int x = 0; x < 16; x++) {
+                    for (int z = 0; z < 16; z++) {
+                        int max = snapshot.getHighestBlockYAt(x, z);
+                        for (int y = min; y < max; y++) {
+                            BlockData blockData = snapshot.getBlockData(x, y, z);
+                            if (blockData.createBlockState() instanceof TileState && blockData.getMaterial() != Material.BEACON) {
+                                data.tileEntities.add(new BlockPos(x + chunkX, y, z + chunkZ));
                             }
                         }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     private ChunkPos key(Chunk c) {
@@ -138,14 +131,23 @@ public class ChunkSnapshotManager {
     }
 
     public boolean isOccluding(Location loc) {
-        Data d = dataMap.get(key(loc.getChunk()));
+        Chunk c = loc.getChunk();
+        Data d = dataMap.get(key(c));
         if (d == null) {
-            Chunk c = loc.getChunk();
             //dataMap.put(key(c), takeSnapshot(c, System.currentTimeMillis())); infinite loop
-            System.err.println("ChunkSnapshotManager: No snapshot for " + loc.getChunk()+ " Please report this on our discord (discord.cubi.games)'");
+            System.err.println("ChunkSnapshotManager: No snapshot for " + c + " Please report this on our discord (discord.cubi.games)'");
             return loc.getBlock().getBlockData().isOccluding();
         }
-        return d.occluding.contains(BlockPos.fromLocation(loc));
+
+        BlockPos pos = BlockPos.fromLocation(loc);
+        Boolean occluding = d.occluding.get(pos);
+        if (occluding != null) {
+            return occluding;
+        }
+
+        occluding = d.snapshot.getBlockData(loc.getBlockX() & 0xF, loc.getBlockY(), loc.getBlockZ() & 0xF).isOccluding();
+        d.occluding.put(pos, occluding);
+        return occluding;
     }
 
     //get TileEntity Locations in chunk

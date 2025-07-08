@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Engine {
+    private static final Particle.DustOptions BLUE = new Particle.DustOptions(Color.BLUE, 1f);
 
     public static ConcurrentHashMap<BlockPos, Set<UUID>> canSeeTileEntity = new ConcurrentHashMap<>();
 
@@ -46,7 +47,7 @@ public class Engine {
         List<RayJob> jobs = new ArrayList<>();
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (p.hasPermission("raycastedentityocclusions.bypass")) continue;
-            Location eye = p.getEyeLocation().clone();
+            Location eye = p.getEyeLocation();
             Location predEye = null;
             if (cfg.engineMode == 2) {
                 // getPredictedLocation returns null if insufficient data or too slow
@@ -64,13 +65,13 @@ public class Engine {
                     continue;
                 }
 
-                Location target = e.getLocation().add(0, e.getHeight() / 2, 0).clone();
+                Location target = e.getLocation().add(0, e.getHeight() / 2, 0);
                 double distSqr = eye.distanceSquared(target);
                 if (distSqr <= cfg.alwaysShowRadius * cfg.alwaysShowRadius) {
                     if (!seen) {
                         p.showEntity(plugin, e);
                     }
-                } else if (distSqr > cfg.raycastRadius & cfg.raycastRadius > 0) {
+                } else if (cfg.raycastRadius > 0 && distSqr > cfg.raycastRadius * cfg.raycastRadius) {
                     if (seen) {
                         p.hideEntity(plugin, e);
                     }
@@ -93,7 +94,7 @@ public class Engine {
                 // if that fails, and we have a predEye, cast again from predicted
                 if (!vis && job.predictedStart != null) {
                     if (cfg.debugMode) {
-                        job.predictedStart.getWorld().spawnParticle(Particle.DUST, job.predictedStart, 1, new Particle.DustOptions(Color.BLUE, 1f));
+                        job.predictedStart.getWorld().spawnParticle(Particle.DUST, job.predictedStart, 1, BLUE);
                     }
                     vis = RaycastUtil.raycast(job.predictedStart, job.end, cfg.maxOccludingCount, cfg.debugMode, snapMgr);
                 }
