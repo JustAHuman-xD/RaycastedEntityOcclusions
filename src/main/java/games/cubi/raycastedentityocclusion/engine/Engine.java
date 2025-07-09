@@ -1,7 +1,5 @@
 package games.cubi.raycastedentityocclusion.engine;
 
-import com.nexomc.nexo.api.NexoFurniture;
-import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
 import games.cubi.raycastedentityocclusion.manager.ChunkSnapshotManager;
 import games.cubi.raycastedentityocclusion.manager.ConfigManager;
 import games.cubi.raycastedentityocclusion.util.EntityNode;
@@ -59,9 +57,9 @@ public class Engine {
 
         int chunks = 0;
         int entities = 0;
+        int lit = 0;
         int skippedPlayers = 0;
         int skippedInvisible = 0;
-        int skippedLights = 0;
         for (int x = minChunkX; x <= maxChunkX; x++) {
             for (int z = minChunkZ; z <= maxChunkZ; z++) {
                 Chunk chunk = cfg.octreeWorld.getChunkAt(x, z);
@@ -71,20 +69,17 @@ public class Engine {
                         else skippedInvisible++;
                         continue;
                     }
-                    FurnitureMechanic furniture = NexoFurniture.furnitureMechanic(entity);
-                    if (furniture != null && !furniture.getLight().isEmpty()) {
-                        skippedLights++;
-                        continue;
-                    }
-                    octree.insert(entity);
+                    EntityNode node = EntityNode.from(entity);
+                    if (node.light()) lit++;
+                    octree.insert(node);
                     entities++;
                 }
                 chunks++;
             }
         }
 
-        plugin.getLogger().info("Reconstructed octree with " + entities + " entities in " + chunks + " chunks.");
-        plugin.getLogger().info("Skipped " + skippedPlayers + " players, " + skippedInvisible + " invisible entities, and " + skippedLights + " lighted furniture.");
+        plugin.getLogger().info("Reconstructed octree[max_depth=" + octree.maxDepth() + "] with " + entities + " entities[lit=" + lit + "] in " + chunks + " chunks.");
+        plugin.getLogger().info("Skipped " + skippedPlayers + " players and " + skippedInvisible + " invisible entities.");
     }
 
     public static void runEngine(ConfigManager cfg, ChunkSnapshotManager snapMgr, RaycastedEntityOcclusion plugin) {
@@ -105,7 +100,7 @@ public class Engine {
                     if (!seen) {
                         results.add(new RayResult(p.getUniqueId(), node.uuid(), true));
                     }
-                } else if (cfg.raycastRadius > 0 && distSqr > cfg.raycastRadius * cfg.raycastRadius) {
+                } else if (!node.light() && cfg.raycastRadius > 0 && distSqr > cfg.raycastRadius * cfg.raycastRadius) {
                     if (seen) {
                         results.add(new RayResult(p.getUniqueId(), node.uuid(), false));
                     }
@@ -113,7 +108,7 @@ public class Engine {
                     // player can see entity, no need to raycast
                 } else {
                     // schedule for async raycast (with or without predEye)
-                    boolean visible = RaycastUtil.raycast(world, eye, node.location(), cfg.maxOccludingCount, cfg.debugMode, snapMgr);
+                    boolean visible = RaycastUtil.raycast(world, eye, node.location(), (node.light() ? 2 : 1) * cfg.maxOccludingCount, cfg.debugMode, snapMgr);
                     if (visible != seen) {
                         results.add(new RayResult(p.getUniqueId(), node.uuid(), visible));
                     }

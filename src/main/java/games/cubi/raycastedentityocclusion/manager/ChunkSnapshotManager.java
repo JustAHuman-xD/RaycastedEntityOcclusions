@@ -18,7 +18,6 @@ public class ChunkSnapshotManager {
     public ChunkSnapshotManager(RaycastedEntityOcclusion plugin) {
         cfg = plugin.getConfigManager();
 
-        //get loaded chunks and add them to dataMap
         for (World w : plugin.getServer().getWorlds()) {
             for (Chunk c : w.getLoadedChunks()) {
                 takeSnapshot(c);
@@ -58,13 +57,12 @@ public class ChunkSnapshotManager {
         dataMap.remove(key(c));
     }
 
-    // Used by SnapshotListener to update the delta map when a block is placed or broken
     public void onBlockChange(Location loc, Material m) {
         if (cfg.debugMode) {
             Bukkit.getLogger().info("ChunkSnapshotManager: Block change at " + loc + " to " + m);
         }
 
-        ChunkData d = dataMap.get(key(loc.getChunk()));
+        ChunkData d = dataMap.get(key(loc));
         if (d != null) {
             BlockPos pos = BlockPos.fromLocation(loc);
             boolean occluding = m.isOccluding();
@@ -82,16 +80,9 @@ public class ChunkSnapshotManager {
         dataMap.put(key(c), chunkData);
     }
 
-    private ChunkPos key(Chunk c) {
-        return new ChunkPos(c.getWorld().getUID(), c.getChunkKey());
-    }
-
     public boolean isOccluding(Location loc) {
-        Chunk c = loc.getChunk();
-        ChunkData d = dataMap.get(key(c));
+        ChunkData d = dataMap.get(key(loc));
         if (d == null) {
-            //dataMap.put(key(c), takeSnapshot(c, System.currentTimeMillis())); infinite loop
-            System.err.println("ChunkSnapshotManager: No snapshot for " + c + " Please report this on our discord (discord.cubi.games)'");
             return loc.getBlock().getBlockData().isOccluding();
         }
 
@@ -108,7 +99,13 @@ public class ChunkSnapshotManager {
 
     public int getNumberOfCachedChunks() {
         return dataMap.size();
-        //created to use in a debug command maybe
     }
 
+    private ChunkPos key(Location loc) {
+        return new ChunkPos(loc.getWorld().getUID(), Chunk.getChunkKey(loc));
+    }
+
+    private ChunkPos key(Chunk c) {
+        return new ChunkPos(c.getWorld().getUID(), c.getChunkKey());
+    }
 }

@@ -7,10 +7,10 @@ recheck-interval: 20              # ticks between forced rechecks for visible en
 always-show-radius: 16             # radius to always show entities
 raycast-radius: 64                # beyond this, entities auto-hide
 max-occluding-count: 3            # blocks before blocking
-search-radius: 82                 # search radius for entities
+search-radius: 128                 # search radius for entities
 
 octree-max-entities: 16           # maximum entities in octree before it splits
-octree-max-depth: 4
+octree-max-depth: 64
 octree-world: world               # The world to cull entities in
 octree-min:                       # world minimum to cull entities in, set to 0 to disable
   x: -136

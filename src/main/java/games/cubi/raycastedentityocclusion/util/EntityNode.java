@@ -7,13 +7,15 @@ import org.bukkit.util.Vector;
 
 import java.util.UUID;
 
-public record EntityNode(UUID uuid, Vector location) {
+public record EntityNode(UUID uuid, Vector location, boolean light) {
     public static EntityNode from(Entity entity) {
         double height = entity.getHeight();
+        boolean light = false;
         FurnitureMechanic furniture = NexoFurniture.furnitureMechanic(entity);
         if (furniture != null) {
             height = furniture.getHitbox().hitboxHeight();
+            light = !furniture.getLight().isEmpty();
         }
-        return new EntityNode(entity.getUniqueId(), entity.getLocation().add(0, height / 2, 0).toVector());
+        return new EntityNode(entity.getUniqueId(), entity.getLocation().add(0, height / 2, 0).toVector(), light);
     }
 }

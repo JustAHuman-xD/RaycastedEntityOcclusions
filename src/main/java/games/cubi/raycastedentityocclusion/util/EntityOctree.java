@@ -1,6 +1,5 @@
 package games.cubi.raycastedentityocclusion.util;
 
-import org.bukkit.entity.Entity;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
@@ -22,10 +21,6 @@ public class EntityOctree {
         this.maxOctreeDepth = maxOctreeDepth;
         this.bounds = bounds;
         this.depth = depth;
-    }
-
-    public void insert(Entity entity) {
-        insert(EntityNode.from(entity));
     }
 
     public void insert(EntityNode node) {
@@ -103,6 +98,15 @@ public class EntityOctree {
             }
         }
         return result;
+    }
+
+    public int maxDepth() {
+        if (children == null) return depth;
+        int maxDepth = depth;
+        for (EntityOctree child : children) {
+            maxDepth = Math.max(maxDepth, child.maxDepth());
+        }
+        return maxDepth;
     }
 
 }

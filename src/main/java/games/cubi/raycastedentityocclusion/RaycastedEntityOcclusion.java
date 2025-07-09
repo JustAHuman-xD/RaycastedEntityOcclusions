@@ -4,6 +4,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import games.cubi.raycastedentityocclusion.engine.Engine;
 import games.cubi.raycastedentityocclusion.listener.CacheListener;
+import games.cubi.raycastedentityocclusion.listener.NexoListener;
 import games.cubi.raycastedentityocclusion.manager.ChunkSnapshotManager;
 import games.cubi.raycastedentityocclusion.manager.CommandsManager;
 import games.cubi.raycastedentityocclusion.manager.ConfigManager;
@@ -11,6 +12,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -26,7 +28,12 @@ public class RaycastedEntityOcclusion extends JavaPlugin implements CommandExecu
         cfg = new ConfigManager(this);
         snapMgr = new ChunkSnapshotManager(this);
         commands = new CommandsManager(this, cfg);
-        getServer().getPluginManager().registerEvents(new CacheListener(snapMgr), this);
+
+        PluginManager pm = getServer().getPluginManager();
+        pm.registerEvents(new CacheListener(snapMgr), this);
+        if (pm.isPluginEnabled("Nexo")) {
+            pm.registerEvents(new NexoListener(this, cfg), this);
+        }
 
         //Brigadier API
         LiteralCommandNode<CommandSourceStack> buildCommand = commands.registerCommand();
