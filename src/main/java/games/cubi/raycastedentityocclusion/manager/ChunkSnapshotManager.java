@@ -39,7 +39,7 @@ public class ChunkSnapshotManager {
                             plugin.getLogger().warning("ChunkSnapshotManager: World " + pos.world() + " not found. Please report this on our discord (discord.cubi.games)'");
                             continue;
                         }
-                        takeSnapshot(w.getChunkAt(pos.chunk()), now);
+                        e.setValue(makeSnapshot(w.getChunkAt(pos.chunk()), now));
                     }
                 }
                 if (cfg.debugMode) {
@@ -57,27 +57,17 @@ public class ChunkSnapshotManager {
         dataMap.remove(key(c));
     }
 
-    public void onBlockChange(Location loc, Material m) {
-        if (cfg.debugMode) {
-            Bukkit.getLogger().info("ChunkSnapshotManager: Block change at " + loc + " to " + m);
-        }
-
-        ChunkData d = dataMap.get(key(loc));
-        if (d != null) {
-            BlockPos pos = BlockPos.fromLocation(loc);
-            boolean occluding = m.isOccluding();
-            d.occluding.put(pos, occluding);
-        }
-    }
-
     private void takeSnapshot(Chunk c) {
         takeSnapshot(c, System.currentTimeMillis());
     }
 
     private void takeSnapshot(Chunk c, long now) {
+        dataMap.put(key(c), makeSnapshot(c, now));
+    }
+
+    private ChunkData makeSnapshot(Chunk c, long now) {
         ChunkSnapshot snapshot = c.getChunkSnapshot(true, false, false, false);
-        ChunkData chunkData = new ChunkData(snapshot, now);
-        dataMap.put(key(c), chunkData);
+        return new ChunkData(snapshot, now);
     }
 
     public boolean isOccluding(Location loc) {
