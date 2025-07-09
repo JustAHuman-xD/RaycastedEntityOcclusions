@@ -1,13 +1,13 @@
-package games.cubi.raycastedEntityOcclusion;
+package games.cubi.raycastedentityocclusion.manager;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import games.cubi.raycastedentityocclusion.RaycastedEntityOcclusion;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -78,19 +78,6 @@ public class CommandsManager {
                                         })
                                 )
                         )
-                )/*
-                .then(Commands.literal("test")
-                        .executes(context -> {
-                            testCommand(context);
-                            return Command.SINGLE_SUCCESS;
-                        })
-                )*/
-                .then(Commands.literal("check-for-updates")
-                        .executes(context -> {
-                            CommandSender sender = context.getSource().getSender();
-                            UpdateChecker.checkForUpdates(plugin, sender);
-                            return Command.SINGLE_SUCCESS;
-                        })
                 )
                 .build();
         return buildCommand;
@@ -104,13 +91,5 @@ public class CommandsManager {
         sender.sendRichMessage("<green>/raycastedentityocclusions config-values <gray>- Shows all config values");
         sender.sendRichMessage("<green>/raycastedentityocclusions set <key> <value> <gray>- Sets a config value");
         return Command.SINGLE_SUCCESS;
-    }
-
-    private void testCommand(CommandContext<CommandSourceStack> context) {
-        CommandSender sender = context.getSource().getSender();
-        sender.sendRichMessage("This is a test command for use in development. It does nothing on publicly released versions (unless I have forgotten to remove the tests).");
-
-        //sender.sendMessage(new UpdateChecker(plugin).hasNewUpdate());
-        UpdateChecker.checkForUpdates(plugin, sender);
     }
 }

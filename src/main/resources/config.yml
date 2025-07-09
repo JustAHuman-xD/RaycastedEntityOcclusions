@@ -1,14 +1,22 @@
-snapshot-refresh-interval: 60     # seconds between chunk snapshot refresh, won't change without restart
-engine-mode: 1                    # 1 = straight-line; 2 = predictive and straight-line
-engine-rate: 1                    # 1 = every tick; 2 = every other tick; 3 = every third tick; etc.
-max-occluding-count: 3            # blocks before blocking
 debug-mode: false                 # enable debug particles
-always-show-radius: 8             # radius to always show entities
-raycast-radius: 82                # beyond this, entities auto-hide
-search-radius: 82                 # search radius for entities
-cull-players: false               # cull hidden players as well as other entities
-only-cull-sneaking-players: false # only cull sneaking players (requires cull-players)
+
+snapshot-refresh-interval: 60     # seconds between chunk snapshot refresh, won't change without restart
+engine-rate: 1                    # 1 = every tick; 2 = every other tick; 3 = every third tick; etc.
 recheck-interval: 20              # ticks between forced rechecks for visible entities
-check-tile-entities: false        # check tile entities for occlusion
-tile-entity-recheck-interval: 0   # seconds between forced rechecks for visible tile entities. If set to 0, they will never be rechecked.
-check-for-updates: true           # check for updates on startup
+
+always-show-radius: 16             # radius to always show entities
+raycast-radius: 64                # beyond this, entities auto-hide
+max-occluding-count: 3            # blocks before blocking
+search-radius: 82                 # search radius for entities
+
+octree-max-entities: 16           # maximum entities in octree before it splits
+octree-max-depth: 4
+octree-world: world               # The world to cull entities in
+octree-min:                       # world minimum to cull entities in, set to 0 to disable
+  x: -136
+  y: 33
+  z: -270
+octree-max:                       # world maximum to cull entities in, set to 0 to disable
+  x: 403
+  y: 144
+  z: 251

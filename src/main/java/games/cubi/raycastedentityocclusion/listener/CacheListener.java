@@ -1,5 +1,7 @@
-package games.cubi.raycastedEntityOcclusion;
+package games.cubi.raycastedentityocclusion.listener;
 
+import games.cubi.raycastedentityocclusion.engine.Engine;
+import games.cubi.raycastedentityocclusion.manager.ChunkSnapshotManager;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -7,14 +9,20 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
-public class SnapshotListener implements Listener {
+public class CacheListener implements Listener {
     private final ChunkSnapshotManager manager;
 
-    public SnapshotListener(ChunkSnapshotManager mgr) {
+    public CacheListener(ChunkSnapshotManager mgr) {
         this.manager = mgr;
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerQuit(PlayerQuitEvent e) {
+        Engine.unCachePlayer(e.getPlayer().getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

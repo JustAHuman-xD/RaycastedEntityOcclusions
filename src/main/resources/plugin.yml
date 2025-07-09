@@ -1,10 +1,10 @@
 name: RaycastedEntityOcclusions
 version: ${version}
-main: games.cubi.raycastedEntityOcclusion.RaycastedEntityOcclusion
+main: games.cubi.raycastedentityocclusion.RaycastedEntityOcclusion
 api-version: '1.21'
 prefix: EntityOcclusions
 authors: [ _Cubicake ]
-load: STARTUP
+load: POSTWORLD
 website: https://cubi.games
 permissions:
     raycastedentityocclusions.command:

@@ -1,35 +1,22 @@
-package games.cubi.raycastedEntityOcclusion;
+package games.cubi.raycastedentityocclusion.manager;
 
-import games.cubi.raycastedEntityOcclusion.util.BlockPos;
-import games.cubi.raycastedEntityOcclusion.util.ChunkPos;
+import games.cubi.raycastedentityocclusion.RaycastedEntityOcclusion;
+import games.cubi.raycastedentityocclusion.util.BlockPos;
+import games.cubi.raycastedentityocclusion.util.ChunkData;
+import games.cubi.raycastedentityocclusion.util.ChunkPos;
 import org.bukkit.*;
-import org.bukkit.block.TileState;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ChunkSnapshotManager {
-    public static class Data {
-        public final ChunkSnapshot snapshot;
-        public final Map<BlockPos, Boolean> occluding = new ConcurrentHashMap<>();
-        public final Set<BlockPos> tileEntities = ConcurrentHashMap.newKeySet();
-        public long lastRefresh;
 
-        public Data(ChunkSnapshot snapshot, long time) {
-            this.snapshot = snapshot;
-            this.lastRefresh = time;
-        }
-    }
-
-    private final RaycastedEntityOcclusion plugin;
-    private final Map<ChunkPos, Data> dataMap = new ConcurrentHashMap<>();
+    private final Map<ChunkPos, ChunkData> dataMap = new ConcurrentHashMap<>();
     private final ConfigManager cfg;
 
     public ChunkSnapshotManager(RaycastedEntityOcclusion plugin) {
         cfg = plugin.getConfigManager();
-        this.plugin = plugin;
 
         //get loaded chunks and add them to dataMap
         for (World w : plugin.getServer().getWorlds()) {
@@ -44,7 +31,7 @@ public class ChunkSnapshotManager {
                 long now = System.currentTimeMillis();
                 int chunksRefreshed = 0;
                 int chunksToRefreshMaximum = getNumberOfCachedChunks() / 3;
-                for (Map.Entry<ChunkPos, Data> e : dataMap.entrySet()) {
+                for (Map.Entry<ChunkPos, ChunkData> e : dataMap.entrySet()) {
                     if (now - e.getValue().lastRefresh >= cfg.snapshotRefreshInterval * 1000L && chunksRefreshed < chunksToRefreshMaximum) {
                         chunksRefreshed++;
                         ChunkPos pos = e.getKey();
@@ -77,23 +64,11 @@ public class ChunkSnapshotManager {
             Bukkit.getLogger().info("ChunkSnapshotManager: Block change at " + loc + " to " + m);
         }
 
-        Data d = dataMap.get(key(loc.getChunk()));
+        ChunkData d = dataMap.get(key(loc.getChunk()));
         if (d != null) {
             BlockPos pos = BlockPos.fromLocation(loc);
             boolean occluding = m.isOccluding();
             d.occluding.put(pos, occluding);
-
-            if (cfg.checkTileEntities) {
-                // Check if the block is a tile entity
-                if (loc.getBlock().getState() instanceof TileState) {
-                    if (cfg.debugMode){
-                        Bukkit.getLogger().info("ChunkSnapshotManager: Tile entity at " + pos);
-                    }
-                    d.tileEntities.add(pos);
-                } else {
-                    d.tileEntities.remove(pos);
-                }
-            }
         }
     }
 
@@ -103,27 +78,8 @@ public class ChunkSnapshotManager {
 
     private void takeSnapshot(Chunk c, long now) {
         ChunkSnapshot snapshot = c.getChunkSnapshot(true, false, false, false);
-        Data data = new Data(snapshot, now);
-        dataMap.put(key(c), data);
-
-        if (cfg.checkTileEntities) {
-            int min = c.getWorld().getMinHeight();
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                int chunkX = c.getX() * 16;
-                int chunkZ = c.getZ() * 16;
-                for (int x = 0; x < 16; x++) {
-                    for (int z = 0; z < 16; z++) {
-                        int max = snapshot.getHighestBlockYAt(x, z);
-                        for (int y = min; y < max; y++) {
-                            BlockData blockData = snapshot.getBlockData(x, y, z);
-                            if (blockData.createBlockState() instanceof TileState && blockData.getMaterial() != Material.BEACON) {
-                                data.tileEntities.add(new BlockPos(x + chunkX, y, z + chunkZ));
-                            }
-                        }
-                    }
-                }
-            });
-        }
+        ChunkData chunkData = new ChunkData(snapshot, now);
+        dataMap.put(key(c), chunkData);
     }
 
     private ChunkPos key(Chunk c) {
@@ -132,7 +88,7 @@ public class ChunkSnapshotManager {
 
     public boolean isOccluding(Location loc) {
         Chunk c = loc.getChunk();
-        Data d = dataMap.get(key(c));
+        ChunkData d = dataMap.get(key(c));
         if (d == null) {
             //dataMap.put(key(c), takeSnapshot(c, System.currentTimeMillis())); infinite loop
             System.err.println("ChunkSnapshotManager: No snapshot for " + c + " Please report this on our discord (discord.cubi.games)'");
@@ -148,15 +104,6 @@ public class ChunkSnapshotManager {
         occluding = d.snapshot.getBlockData(loc.getBlockX() & 0xF, loc.getBlockY(), loc.getBlockZ() & 0xF).isOccluding();
         d.occluding.put(pos, occluding);
         return occluding;
-    }
-
-    //get TileEntity Locations in chunk
-    public Set<BlockPos> getTileEntitiesInChunk(World world, int x, int z) {
-        Data d = dataMap.get(new ChunkPos(world.getUID(), Chunk.getChunkKey(x, z)));
-        if (d == null) {
-            return Collections.emptySet();
-        }
-        return d.tileEntities;
     }
 
     public int getNumberOfCachedChunks() {

@@ -1,28 +1,31 @@
-package games.cubi.raycastedEntityOcclusion;
+package games.cubi.raycastedentityocclusion.util;
 
+import games.cubi.raycastedentityocclusion.manager.ChunkSnapshotManager;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.util.Vector;
 
 public class RaycastUtil {
     private static final Particle.DustOptions RED = new Particle.DustOptions(org.bukkit.Color.RED, 1f);
     private static final Particle.DustOptions GREEN = new Particle.DustOptions(org.bukkit.Color.GREEN, 1f);
 
-    public static boolean raycast(Location start, Location end, int maxOccluding, boolean debug, ChunkSnapshotManager snap) {
+    public static boolean raycast(World world, Vector start, Vector end, int maxOccluding, boolean debug, ChunkSnapshotManager snap) {
         double totalDistanceSqr = start.distanceSquared(end);
-        Location curr = start.clone();
-        Vector dir = end.toVector().subtract(start.toVector()).normalize();
+        Vector curr = start.clone();
+        Vector dir = end.clone().subtract(start).normalize();
         while (curr.distanceSquared(start) < totalDistanceSqr) {
             curr.add(dir);
-            if (snap.isOccluding(curr)) {
+            Location currLoc = curr.toLocation(world);
+            if (snap.isOccluding(currLoc)) {
                 if (debug) {
-                    start.getWorld().spawnParticle(Particle.DUST, curr, 1, RED);
+                    world.spawnParticle(Particle.DUST, currLoc, 1, RED);
                 }
                 if (--maxOccluding < 1) {
                     return false;
                 }
             } else if (debug) {
-                start.getWorld().spawnParticle(Particle.DUST, curr, 1, GREEN);
+                world.spawnParticle(Particle.DUST, currLoc, 1, GREEN);
             }
         }
         return true;

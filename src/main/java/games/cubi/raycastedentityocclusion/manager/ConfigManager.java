@@ -1,24 +1,32 @@
-package games.cubi.raycastedEntityOcclusion;
+package games.cubi.raycastedentityocclusion.manager;
 
+import games.cubi.raycastedentityocclusion.engine.Engine;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.Vector;
 
 public class ConfigManager {
     private final JavaPlugin plugin;
-    public int snapshotRefreshInterval;
-    public int engineMode;
-    public int engineRate;
-    public int maxOccludingCount;
+
     public boolean debugMode;
+
+    public int snapshotRefreshInterval;
+    public int engineRate;
+    public int recheckInterval;
+
     public int alwaysShowRadius;
     public int raycastRadius;
+    public int maxOccludingCount;
     public int searchRadius;
-    public boolean cullPlayers;
-    public boolean onlyCullSneakingPlayers;
-    public int recheckInterval;
-    public boolean checkTileEntities;
-    public int tileEntityRecheckInterval;
-    public boolean checkForUpdates;
+
+    public int maxOctreeEntities;
+    public int maxOctreeDepth;
+    public World octreeWorld;
+    public BoundingBox octreeBounds;
+
     public FileConfiguration cfg;
 
     public ConfigManager(JavaPlugin plugin) {
@@ -31,39 +39,40 @@ public class ConfigManager {
         plugin.reloadConfig();
         cfg = plugin.getConfig();
 
-        snapshotRefreshInterval = cfg.getInt("snapshot-refresh-interval", 60);
-        engineMode = cfg.getInt("engine-mode", 1);
-        engineRate = cfg.getInt("engine-rate", 1);
-        maxOccludingCount = cfg.getInt("max-occluding-count", 3);
         debugMode = cfg.getBoolean("debug-mode", false);
+
+        snapshotRefreshInterval = cfg.getInt("snapshot-refresh-interval", 60);
+        engineRate = cfg.getInt("engine-rate", 1);
+        recheckInterval = cfg.getInt("recheck-interval", 20);
 
         alwaysShowRadius = cfg.getInt("always-show-radius", 8);
         raycastRadius = cfg.getInt("raycast-radius", 48);
+        maxOccludingCount = cfg.getInt("max-occluding-count", 3);
         searchRadius = cfg.getInt("search-radius", 48);
-        cullPlayers = cfg.getBoolean("cull-players", false);
-        onlyCullSneakingPlayers = cfg.getBoolean("only-cull-sneaking-players", false);
-        recheckInterval = cfg.getInt("recheck-interval", 20);
 
-        checkTileEntities = cfg.getBoolean("check-tile-entities", false);
-        tileEntityRecheckInterval = cfg.getInt("tile-entity-recheck-interval", 0);
 
-        checkForUpdates = cfg.getBoolean("check-for-updates", true);
+        maxOctreeEntities = cfg.getInt("octree-max-entities", 16);
+        maxOctreeDepth = cfg.getInt("octree-max-depth", 4);
+        octreeWorld = Bukkit.getWorld(cfg.getString("octree-world", "world"));
+        octreeBounds = BoundingBox.of(getVector("octree-min"), getVector("octree-max"));
+        if (octreeWorld == null || octreeBounds.getVolume() == 0 || maxOctreeEntities <= 0 || maxOctreeDepth <= 0) {
+            plugin.getLogger().severe("Invalid octree specified in config, plugin will not function.");
+        }
+
+        Engine.reconstructOctree(plugin, this);
 
         // Write defaults if missing
-        cfg.addDefault("snapshot-refresh-interval", 60);
-        cfg.addDefault("engine-mode", 1);
-        cfg.addDefault("engine-rate", 1);
-        cfg.addDefault("max-occluding-count", 3);
         cfg.addDefault("debug-mode", false);
+        cfg.addDefault("snapshot-refresh-interval", 60);
+        cfg.addDefault("engine-rate", 1);
+        cfg.addDefault("recheck-interval", 20);
         cfg.addDefault("always-show-radius", 8);
         cfg.addDefault("raycast-radius", 48);
+        cfg.addDefault("max-occluding-count", 3);
         cfg.addDefault("search-radius", 48);
-        cfg.addDefault("cull-players", false);
-        cfg.addDefault("only-cull-sneaking-players", false);
-        cfg.addDefault("recheck-interval", 20);
-        cfg.addDefault("check-tile-entities", false);
-        cfg.addDefault("tile-entity-recheck-interval", 0);
-        cfg.addDefault("check-for-updates", true);
+        cfg.addDefault("octree-max-entities", 16);
+        cfg.addDefault("octree-max-depth", 4);
+        cfg.addDefault("octree-world", "world");
         cfg.options().copyDefaults(true);
         plugin.saveConfig();
     }
@@ -97,5 +106,15 @@ public class ConfigManager {
         0 = out of range
         1 = success
          */
+    }
+
+    public Vector getVector(String key) {
+        if (cfg.isVector(key)) {
+            return cfg.getVector(key);
+        } else if (cfg.isInt(key + ".x") && cfg.isInt(key + ".y") && cfg.isInt(key + ".z")) {
+            return new Vector(cfg.getInt(key + ".x"), cfg.getInt(key + ".y"), cfg.getInt(key + ".z"));
+        } else {
+            return new Vector(0, 0, 0);
+        }
     }
 }

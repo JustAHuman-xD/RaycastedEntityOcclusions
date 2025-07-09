@@ -1,7 +1,12 @@
-package games.cubi.raycastedEntityOcclusion;
+package games.cubi.raycastedentityocclusion;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import games.cubi.raycastedentityocclusion.engine.Engine;
+import games.cubi.raycastedentityocclusion.listener.CacheListener;
+import games.cubi.raycastedentityocclusion.manager.ChunkSnapshotManager;
+import games.cubi.raycastedentityocclusion.manager.CommandsManager;
+import games.cubi.raycastedentityocclusion.manager.ConfigManager;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
@@ -12,7 +17,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class RaycastedEntityOcclusion extends JavaPlugin implements CommandExecutor {
     private ConfigManager cfg;
     private ChunkSnapshotManager snapMgr;
-    private MovementTracker tracker;
     private CommandsManager commands;
 
     public int tick = 0;
@@ -21,10 +25,8 @@ public class RaycastedEntityOcclusion extends JavaPlugin implements CommandExecu
     public void onEnable() {
         cfg = new ConfigManager(this);
         snapMgr = new ChunkSnapshotManager(this);
-        tracker = new MovementTracker(this, cfg);
         commands = new CommandsManager(this, cfg);
-        getServer().getPluginManager().registerEvents(new SnapshotListener(snapMgr), this);
-        getServer().getPluginManager().registerEvents(new UpdateChecker(this, cfg), this);
+        getServer().getPluginManager().registerEvents(new CacheListener(snapMgr), this);
 
         //Brigadier API
         LiteralCommandNode<CommandSourceStack> buildCommand = commands.registerCommand();
@@ -41,20 +43,15 @@ public class RaycastedEntityOcclusion extends JavaPlugin implements CommandExecu
                     .redirect(buildCommand).build());
         });
 
-        //bStats
-        int pluginId = 24553;
-        new Metrics(this, pluginId);
-
         new BukkitRunnable() {
             @Override
             public void run() {
                 if (tick % cfg.engineRate == 0) {
-                    Engine.runEngine(cfg, snapMgr, tracker, RaycastedEntityOcclusion.this);
-                    Engine.runTileEngine(cfg, snapMgr, tracker, RaycastedEntityOcclusion.this);
+                    Engine.runEngine(cfg, snapMgr, RaycastedEntityOcclusion.this);
                 }
                 tick++;
             }
-        }.runTaskTimer(this, 1L, 1);
+        }.runTaskTimerAsynchronously(this, 1L, 1);
     }
 
     public ConfigManager getConfigManager() {
