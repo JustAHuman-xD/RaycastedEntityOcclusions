@@ -1,6 +1,6 @@
 debug-mode: false                 # enable debug particles
 
-snapshot-refresh-interval: 60     # seconds between chunk snapshot refresh, won't change without restart
+snapshot-refresh-interval: 12000  # ticks between chunk snapshot refresh, won't change without restart
 engine-rate: 1                    # 1 = every tick; 2 = every other tick; 3 = every third tick; etc.
 recheck-interval: 20              # ticks between forced rechecks for visible entities
 

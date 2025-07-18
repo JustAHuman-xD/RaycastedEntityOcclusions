@@ -104,7 +104,7 @@ public class Engine {
                     if (seen) {
                         results.add(new RayResult(p.getUniqueId(), node.uuid(), false));
                     }
-                } else if (seen && plugin.tick % cfg.recheckInterval != 0) {
+                } else if (seen && RaycastedEntityOcclusion.tick % cfg.recheckInterval != 0) {
                     // player can see entity, no need to raycast
                 } else {
                     // schedule for async raycast (with or without predEye)
@@ -131,6 +131,7 @@ public class Engine {
                     p.hideEntity(plugin, ent);
                 }
             }
+            RaycastedEntityOcclusion.running.set(false);
         });
     }
 

@@ -1,14 +1,15 @@
 package games.cubi.raycastedentityocclusion.util;
 
 import games.cubi.raycastedentityocclusion.manager.ChunkSnapshotManager;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
 
 public class RaycastUtil {
-    private static final Particle.DustOptions RED = new Particle.DustOptions(org.bukkit.Color.RED, 1f);
-    private static final Particle.DustOptions GREEN = new Particle.DustOptions(org.bukkit.Color.GREEN, 1f);
+    private static final Particle.DustOptions RED = new Particle.DustOptions(Color.RED, 1f);
+    private static final Particle.DustOptions GREEN = new Particle.DustOptions(Color.GREEN, 1f);
 
     public static boolean raycast(World world, Vector start, Vector end, int maxOccluding, boolean debug, ChunkSnapshotManager snap) {
         double totalDistanceSqr = start.distanceSquared(end);

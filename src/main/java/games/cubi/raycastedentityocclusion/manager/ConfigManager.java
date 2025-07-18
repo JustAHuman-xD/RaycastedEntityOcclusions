@@ -41,7 +41,7 @@ public class ConfigManager {
 
         debugMode = cfg.getBoolean("debug-mode", false);
 
-        snapshotRefreshInterval = cfg.getInt("snapshot-refresh-interval", 60);
+        snapshotRefreshInterval = cfg.getInt("snapshot-refresh-interval", 12000);
         engineRate = cfg.getInt("engine-rate", 1);
         recheckInterval = cfg.getInt("recheck-interval", 20);
 

@@ -1,7 +1,6 @@
 package games.cubi.raycastedentityocclusion.manager;
 
 import games.cubi.raycastedentityocclusion.RaycastedEntityOcclusion;
-import games.cubi.raycastedentityocclusion.util.BlockPos;
 import games.cubi.raycastedentityocclusion.util.ChunkData;
 import games.cubi.raycastedentityocclusion.util.ChunkPos;
 import org.bukkit.*;
@@ -29,10 +28,9 @@ public class ChunkSnapshotManager {
             public void run() {
                 long now = System.currentTimeMillis();
                 int chunksRefreshed = 0;
-                int chunksToRefreshMaximum = getNumberOfCachedChunks() / 3;
+                int chunksToRefreshMaximum = dataMap.size() / 3;
                 for (Map.Entry<ChunkPos, ChunkData> e : dataMap.entrySet()) {
-                    if (now - e.getValue().lastRefresh >= cfg.snapshotRefreshInterval * 1000L && chunksRefreshed < chunksToRefreshMaximum) {
-                        chunksRefreshed++;
+                    if (now - e.getValue().timestamp >= cfg.snapshotRefreshInterval * 1000L) {
                         ChunkPos pos = e.getKey();
                         World w = Bukkit.getWorld(pos.world());
                         if (w == null) {
@@ -40,13 +38,20 @@ public class ChunkSnapshotManager {
                             continue;
                         }
                         e.setValue(makeSnapshot(w.getChunkAt(pos.chunk()), now));
+
+                        if (++chunksRefreshed >= chunksToRefreshMaximum) {
+                            if (cfg.debugMode) {
+                                plugin.getLogger().info("ChunkSnapshotManager: Reached maximum chunks to refresh (" + chunksToRefreshMaximum + "). Stopping refresh.");
+                            }
+                            break; // Stop refreshing if we reached the maximum
+                        }
                     }
                 }
                 if (cfg.debugMode) {
                     plugin.getLogger().info("ChunkSnapshotManager: Refreshed " + chunksRefreshed + " chunks out of " + chunksToRefreshMaximum + " maximum.");
                 }
             }
-        }.runTaskTimerAsynchronously(plugin, cfg.snapshotRefreshInterval * 2L, cfg.snapshotRefreshInterval * 2L /* This runs 10 times per refreshInterval, spreading out the refreshes */);
+        }.runTaskTimerAsynchronously(plugin, cfg.snapshotRefreshInterval, cfg.snapshotRefreshInterval);
     }
 
     public void onChunkLoad(Chunk c) {
@@ -72,23 +77,9 @@ public class ChunkSnapshotManager {
 
     public boolean isOccluding(Location loc) {
         ChunkData d = dataMap.get(key(loc));
-        if (d == null) {
-            return loc.getBlock().getBlockData().isOccluding();
-        }
-
-        BlockPos pos = BlockPos.fromLocation(loc);
-        Boolean occluding = d.occluding.get(pos);
-        if (occluding != null) {
-            return occluding;
-        }
-
-        occluding = d.snapshot.getBlockData(loc.getBlockX() & 0xF, loc.getBlockY(), loc.getBlockZ() & 0xF).isOccluding();
-        d.occluding.put(pos, occluding);
-        return occluding;
-    }
-
-    public int getNumberOfCachedChunks() {
-        return dataMap.size();
+        return d == null
+                ? loc.getBlock().getBlockData().isOccluding()
+                : d.isOccluding(loc);
     }
 
     private ChunkPos key(Location loc) {

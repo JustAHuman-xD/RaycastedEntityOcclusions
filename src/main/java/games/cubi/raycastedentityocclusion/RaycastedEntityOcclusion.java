@@ -16,12 +16,15 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class RaycastedEntityOcclusion extends JavaPlugin implements CommandExecutor {
     private ConfigManager cfg;
     private ChunkSnapshotManager snapMgr;
     private CommandsManager commands;
 
-    public int tick = 0;
+    public static AtomicBoolean running = new AtomicBoolean(false);
+    public static int tick = 0;
 
     @Override
     public void onEnable() {
@@ -53,7 +56,12 @@ public class RaycastedEntityOcclusion extends JavaPlugin implements CommandExecu
         new BukkitRunnable() {
             @Override
             public void run() {
+                if (running.get()) {
+                    return;
+                }
+
                 if (tick % cfg.engineRate == 0) {
+                    running.set(true);
                     Engine.runEngine(cfg, snapMgr, RaycastedEntityOcclusion.this);
                 }
                 tick++;
