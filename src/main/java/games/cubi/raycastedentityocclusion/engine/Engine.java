@@ -40,7 +40,6 @@ public class Engine {
 
     private static EntityOctree octree;
 
-
     public static void reconstructOctree(JavaPlugin plugin, ConfigManager cfg) {
         if (cfg.octreeWorld == null || cfg.octreeBounds.getVolume() == 0 || cfg.maxOctreeEntities == 0 || cfg.maxOctreeDepth == 0) {
             octree = null;
@@ -50,36 +49,12 @@ public class Engine {
         octree = new EntityOctree(cfg.maxOctreeEntities, cfg.maxOctreeDepth, cfg.octreeBounds, 0);
         ENTITY_CACHE.clear();
 
-        int minChunkX = (int) (cfg.octreeBounds.getMinX() / 16);
-        int minChunkZ = (int) (cfg.octreeBounds.getMinZ() / 16);
-        int maxChunkX = (int) (cfg.octreeBounds.getMaxX() / 16);
-        int maxChunkZ = (int) (cfg.octreeBounds.getMaxZ() / 16);
-
-        int chunks = 0;
-        int entities = 0;
-        int lit = 0;
-        int skippedPlayers = 0;
-        int skippedInvisible = 0;
-        for (int x = minChunkX; x <= maxChunkX; x++) {
-            for (int z = minChunkZ; z <= maxChunkZ; z++) {
-                Chunk chunk = cfg.octreeWorld.getChunkAt(x, z);
-                for (Entity entity : chunk.getEntities()) {
-                    if (entity instanceof Player || !entity.isVisibleByDefault()) {
-                        if (entity instanceof Player) skippedPlayers++;
-                        else skippedInvisible++;
-                        continue;
-                    }
-                    EntityNode node = EntityNode.from(entity);
-                    if (node.light()) lit++;
-                    octree.insert(node);
-                    entities++;
-                }
-                chunks++;
-            }
+        for (Chunk chunk : cfg.octreeWorld.getLoadedChunks()) {
+            octree.insert(chunk);
         }
 
-        plugin.getLogger().info("Reconstructed octree[max_depth=" + octree.maxDepth() + "] with " + entities + " entities[lit=" + lit + "] in " + chunks + " chunks.");
-        plugin.getLogger().info("Skipped " + skippedPlayers + " players and " + skippedInvisible + " invisible entities.");
+        plugin.getLogger().info("Reconstructed octree[max_depth=" + octree.maxDepth() + "] with " + octree.getEntities() + " entities[lit=" + octree.getLit() + "] in " + octree.getChunks() + " loaded chunks. (More will be added as chunks are loaded)");
+        plugin.getLogger().info("Skipped " + octree.getSkippedPlayers() + " players and " + octree.getSkippedInvisible() + " invisible entities.");
     }
 
     public static void runEngine(ConfigManager cfg, ChunkSnapshotManager snapMgr, RaycastedEntityOcclusion plugin) {
@@ -89,7 +64,7 @@ public class Engine {
 
         // ----- PHASE 1: ASYNC COMPUTE -----
         List<RayResult> results = new ArrayList<>();
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (Player p : cfg.octreeWorld.getPlayers()) {
             if (p.hasPermission("raycastedentityocclusions.bypass")) continue;
             World world = p.getWorld();
             Vector eye = p.getEyeLocation().toVector();
@@ -133,6 +108,10 @@ public class Engine {
             }
             RaycastedEntityOcclusion.running.set(false);
         });
+    }
+
+    public static EntityOctree getOctree() {
+        return octree;
     }
 
     public static void unCachePlayer(UUID uuid) {

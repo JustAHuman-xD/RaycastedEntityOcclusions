@@ -1,10 +1,15 @@
 package games.cubi.raycastedentityocclusion.util;
 
+import org.bukkit.Chunk;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class EntityOctree {
 
@@ -12,15 +17,37 @@ public class EntityOctree {
     private final int maxOctreeDepth;
 
     private final BoundingBox bounds;
+    private final Set<ChunkPos> cachedChunks = new HashSet<>();
     private final int depth;
     private final List<EntityNode> nodes = new ArrayList<>();
     private EntityOctree[] children = null;
+
+    private int entities = 0;
+    private int lit = 0;
+    private int skippedPlayers = 0;
+    private int skippedInvisible = 0;
 
     public EntityOctree(int maxOctreeEntities, int maxOctreeDepth, BoundingBox bounds, int depth) {
         this.maxOctreeEntities = maxOctreeEntities;
         this.maxOctreeDepth = maxOctreeDepth;
         this.bounds = bounds;
         this.depth = depth;
+    }
+
+    public void insert(Chunk chunk) {
+        if (!cachedChunks.add(new ChunkPos(null, Chunk.getChunkKey(chunk.getX(), chunk.getZ())))) return;
+
+        for (Entity entity : chunk.getEntities()) {
+            if (entity instanceof Player || !entity.isVisibleByDefault()) {
+                if (entity instanceof Player) skippedPlayers++;
+                else skippedInvisible++;
+                continue;
+            }
+            EntityNode node = EntityNode.from(entity);
+            if (node.light()) lit++;
+            insert(node);
+            entities++;
+        }
     }
 
     public void insert(EntityNode node) {
@@ -109,4 +136,23 @@ public class EntityOctree {
         return maxDepth;
     }
 
+    public int getChunks() {
+        return cachedChunks.size();
+    }
+
+    public int getEntities() {
+        return entities;
+    }
+
+    public int getLit() {
+        return lit;
+    }
+
+    public int getSkippedPlayers() {
+        return skippedPlayers;
+    }
+
+    public int getSkippedInvisible() {
+        return skippedInvisible;
+    }
 }

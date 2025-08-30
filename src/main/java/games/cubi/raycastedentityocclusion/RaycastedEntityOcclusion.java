@@ -33,7 +33,7 @@ public class RaycastedEntityOcclusion extends JavaPlugin implements CommandExecu
         commands = new CommandsManager(this, cfg);
 
         PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(new CacheListener(snapMgr), this);
+        pm.registerEvents(new CacheListener(cfg, snapMgr), this);
         if (pm.isPluginEnabled("Nexo")) {
             pm.registerEvents(new NexoListener(this, cfg), this);
         }
