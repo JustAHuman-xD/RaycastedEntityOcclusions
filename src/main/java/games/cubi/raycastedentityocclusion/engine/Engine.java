@@ -68,6 +68,7 @@ public class Engine {
             if (p.hasPermission("raycastedentityocclusions.bypass")) continue;
             World world = p.getWorld();
             Vector eye = p.getEyeLocation().toVector();
+            // TODO: Don't use searchRadius if the player's view distance is smaller (or the servers, or etc)
             for (EntityNode node : octree.query(BoundingBox.of(eye, cfg.searchRadius, cfg.searchRadius, cfg.searchRadius))) {
                 boolean seen = canSee(p, node.uuid());
                 double distSqr = eye.distanceSquared(node.location());
