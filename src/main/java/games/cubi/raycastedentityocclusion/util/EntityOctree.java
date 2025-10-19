@@ -1,5 +1,6 @@
 package games.cubi.raycastedentityocclusion.util;
 
+import games.cubi.raycastedentityocclusion.RaycastedEntityOcclusion;
 import org.bukkit.Chunk;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -26,6 +27,7 @@ public class EntityOctree {
     private int lit = 0;
     private int skippedPlayers = 0;
     private int skippedInvisible = 0;
+    private int repairedMeg = 0;
 
     public EntityOctree(int maxOctreeEntities, int maxOctreeDepth, BoundingBox bounds, int depth) {
         this.maxOctreeEntities = maxOctreeEntities;
@@ -37,6 +39,7 @@ public class EntityOctree {
     public void insert(Chunk chunk) {
         if (!cachedChunks.add(new ChunkPos(null, Chunk.getChunkKey(chunk.getX(), chunk.getZ())))) return;
 
+        repairedMeg = 0;
         for (Entity entity : chunk.getEntities()) {
             if (entity instanceof Player || !entity.isVisibleByDefault()) {
                 if (entity instanceof Player) skippedPlayers++;
@@ -45,8 +48,13 @@ public class EntityOctree {
             }
             EntityNode node = EntityNode.from(entity);
             if (node.light()) lit++;
+            if (node.repairMeg()) repairedMeg++;
             insert(node);
             entities++;
+        }
+
+        if (repairedMeg > 0) {
+            RaycastedEntityOcclusion.instance.getLogger().warning("Repaired ModelEngine render radius for " + repairedMeg + " entities in chunk [" + chunk.getX() + ", " + chunk.getZ() + "].");
         }
     }
 
@@ -127,6 +135,16 @@ public class EntityOctree {
         return result;
     }
 
+    public List<EntityNode> getAllNodes() {
+        List<EntityNode> result = new ArrayList<>(nodes);
+        if (children != null) {
+            for (EntityOctree child : children) {
+                result.addAll(child.getAllNodes());
+            }
+        }
+        return result;
+    }
+
     public int maxDepth() {
         if (children == null) return depth;
         int maxDepth = depth;
@@ -154,5 +172,22 @@ public class EntityOctree {
 
     public int getSkippedInvisible() {
         return skippedInvisible;
+    }
+
+    public int getRepairedMeg() {
+        return repairedMeg;
+    }
+
+    public void repairMegEntities() {
+        repairedMeg = 0;
+        List<EntityNode> allNodes = getAllNodes();
+        for (EntityNode node : allNodes) {
+            if (node.repairMeg()) {
+                repairedMeg++;
+            }
+        }
+        if (repairedMeg > 0) {
+            RaycastedEntityOcclusion.instance.getLogger().warning("Repaired ModelEngine render radius for " + repairedMeg + " entities in the octree.");
+        }
     }
 }

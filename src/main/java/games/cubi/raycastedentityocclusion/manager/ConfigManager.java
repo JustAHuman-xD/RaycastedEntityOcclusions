@@ -16,6 +16,7 @@ public class ConfigManager {
     public int snapshotRefreshInterval;
     public int engineRate;
     public int recheckInterval;
+    public int megRepairInterval;
 
     public int alwaysShowRadius;
     public int raycastRadius;
@@ -44,6 +45,7 @@ public class ConfigManager {
         snapshotRefreshInterval = cfg.getInt("snapshot-refresh-interval", 12000);
         engineRate = cfg.getInt("engine-rate", 1);
         recheckInterval = cfg.getInt("recheck-interval", 20);
+        megRepairInterval = cfg.getInt("meg-repair-interval", 1200);
 
         alwaysShowRadius = cfg.getInt("always-show-radius", 8);
         raycastRadius = cfg.getInt("raycast-radius", 48);

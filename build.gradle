@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'games.cubi'
-version = '1.6.0'
+version = '1.6.1'
 
 repositories {
     mavenCentral()
@@ -19,11 +19,13 @@ repositories {
         name = "nexo"
         url = "https://repo.nexomc.com/releases"
     }
+    maven { url = "https://mvn.lumine.io/repository/maven-public/" }
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
     compileOnly("com.nexomc:nexo:1.8.0")
+    compileOnly("com.ticxo.modelengine:ModelEngine:R4.0.4")
 }
 
 def targetJavaVersion = 21

@@ -5,6 +5,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import games.cubi.raycastedentityocclusion.RaycastedEntityOcclusion;
+import games.cubi.raycastedentityocclusion.engine.Engine;
+import games.cubi.raycastedentityocclusion.util.EntityOctree;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -36,6 +38,25 @@ public class CommandsManager {
                     context.getSource().getSender().sendMessage("[EntityOcclusions] Config reloaded.");
                     return Command.SINGLE_SUCCESS;
                 }))
+                .then(Commands.literal("dump-octree")
+                        .executes(context -> {
+                            EntityOctree octree = Engine.getOctree();
+                            if (octree != null) {
+                                context.getSource().getSender().sendMessage("octree[max_depth=" + octree.maxDepth() + "] with " + octree.getEntities() + " entities[lit=" + octree.getLit() + "] in " + octree.getChunks() + " loaded chunks. (More will be added as chunks are loaded)");
+                            }
+                            return Command.SINGLE_SUCCESS;
+                        }))
+                .then(Commands.literal("repair-meg")
+                        .executes(context -> {
+                            EntityOctree octree = Engine.getOctree();
+                            int repaired = 0;
+                            if (octree != null) {
+                                octree.repairMegEntities();
+                                repaired = octree.getRepairedMeg();
+                            }
+                            context.getSource().getSender().sendMessage("Repaired ModelEngine render radius for " + repaired + " entities in the octree.");
+                            return Command.SINGLE_SUCCESS;
+                        }))
                 .then(Commands.literal("config-values")
                     .executes(context -> {
                         CommandSender sender = context.getSource().getSender();
@@ -50,7 +71,6 @@ public class CommandsManager {
                         }
                         return Command.SINGLE_SUCCESS;
                     }))
-
                 .then(Commands.literal("set")
                         .executes(context -> {
                             CommandSender sender = context.getSource().getSender();

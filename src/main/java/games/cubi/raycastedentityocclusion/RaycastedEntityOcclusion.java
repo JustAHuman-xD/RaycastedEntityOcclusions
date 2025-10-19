@@ -23,11 +23,13 @@ public class RaycastedEntityOcclusion extends JavaPlugin implements CommandExecu
     private ChunkSnapshotManager snapMgr;
     private CommandsManager commands;
 
+    public static RaycastedEntityOcclusion instance;
     public static AtomicBoolean running = new AtomicBoolean(false);
     public static int tick = 0;
 
     @Override
     public void onEnable() {
+        instance = this;
         cfg = new ConfigManager(this);
         snapMgr = new ChunkSnapshotManager(this);
         commands = new CommandsManager(this, cfg);
@@ -58,6 +60,10 @@ public class RaycastedEntityOcclusion extends JavaPlugin implements CommandExecu
             public void run() {
                 if (running.get()) {
                     return;
+                }
+
+                if (tick % cfg.megRepairInterval == 0) {
+                    Engine.getOctree().repairMegEntities();
                 }
 
                 if (tick % cfg.engineRate == 0) {
