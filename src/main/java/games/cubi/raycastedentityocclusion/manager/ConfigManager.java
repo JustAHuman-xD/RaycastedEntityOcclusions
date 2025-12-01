@@ -1,12 +1,19 @@
 package games.cubi.raycastedentityocclusion.manager;
 
 import games.cubi.raycastedentityocclusion.engine.Engine;
+import io.papermc.paper.math.Rotation;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class ConfigManager {
     private final JavaPlugin plugin;
@@ -16,7 +23,12 @@ public class ConfigManager {
     public int snapshotRefreshInterval;
     public int engineRate;
     public int recheckInterval;
+
     public int megRepairInterval;
+    public boolean logMegRepairs;
+    public int megMinRenderRadius;
+    public boolean megRotationLocked;
+    public Map<UUID, Float> megRotations;
 
     public int alwaysShowRadius;
     public int raycastRadius;
@@ -45,7 +57,30 @@ public class ConfigManager {
         snapshotRefreshInterval = cfg.getInt("snapshot-refresh-interval", 12000);
         engineRate = cfg.getInt("engine-rate", 1);
         recheckInterval = cfg.getInt("recheck-interval", 20);
+
         megRepairInterval = cfg.getInt("meg-repair-interval", 1200);
+        logMegRepairs = cfg.getBoolean("log-meg-repairs", false);
+        megMinRenderRadius = cfg.getInt("minimum-meg-radius", 48);
+        megRotationLocked = cfg.getBoolean("meg-rotation-locked", true);
+        megRotations = new HashMap<>();
+        ConfigurationSection rotSection = cfg.getConfigurationSection("meg-rotations");
+        if (rotSection == null) {
+            plugin.getLogger().info("No MEG rotations found in config.");
+        } else {
+            for (String key : rotSection.getKeys(false)) {
+                try {
+                    UUID uuid = UUID.fromString(key);
+                    if (rotSection.isDouble(key)) {
+                        megRotations.put(uuid, (float) rotSection.getDouble(key));
+                    } else {
+                        plugin.getLogger().warning("Invalid rotation data for MEG UUID: " + key + ". Expected 2 values (yaw, pitch).");
+                    }
+                } catch (IllegalArgumentException e) {
+                    plugin.getLogger().warning("Invalid UUID format in MEG rotations: " + key);
+                }
+            }
+            plugin.getLogger().info("Loaded " + megRotations.size() + " MEG rotations from config.");
+        }
 
         alwaysShowRadius = cfg.getInt("always-show-radius", 8);
         raycastRadius = cfg.getInt("raycast-radius", 48);

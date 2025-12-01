@@ -1,17 +1,27 @@
 package games.cubi.raycastedentityocclusion.manager;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import games.cubi.raycastedentityocclusion.RaycastedEntityOcclusion;
 import games.cubi.raycastedentityocclusion.engine.Engine;
+import games.cubi.raycastedentityocclusion.util.EntityNode;
 import games.cubi.raycastedentityocclusion.util.EntityOctree;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 public class CommandsManager {
     private final RaycastedEntityOcclusion plugin;
@@ -48,15 +58,87 @@ public class CommandsManager {
                         }))
                 .then(Commands.literal("repair-meg")
                         .executes(context -> {
-                            EntityOctree octree = Engine.getOctree();
-                            int repaired = 0;
-                            if (octree != null) {
-                                octree.repairMegEntities();
-                                repaired = octree.getRepairedMeg();
-                            }
-                            context.getSource().getSender().sendMessage("Repaired ModelEngine render radius for " + repaired + " entities in the octree.");
-                            return Command.SINGLE_SUCCESS;
-                        }))
+                            CommandSender sender = context.getSource().getSender();
+                            sender.sendRichMessage("<red>Usage: /raycastedentityocclusions repair-meg <verbose>");
+                            return 0;
+                        })
+                        .then(Commands.argument("verbose", BoolArgumentType.bool())
+                                .executes(context -> {
+                                    boolean verbose = BoolArgumentType.getBool(context, "verbose");
+                                    EntityOctree octree = Engine.getOctree();
+                                    Set<UUID> savedFixed = new HashSet<>();
+                                    Set<UUID> radiusFixed = new HashSet<>();
+                                    Set<UUID> lockFixed = new HashSet<>();
+                                    Set<UUID> rotationFixed = new HashSet<>();
+                                    Set<UUID> mythicDataFixed = new HashSet<>();
+                                    if (octree != null) {
+                                        List<EntityNode> nodes = octree.getAllNodes();
+                                        for (EntityNode node : nodes) {
+                                            boolean[] repairs = node.repairMeg(cfg);
+                                            if (repairs[0]) savedFixed.add(node.uuid());
+                                            if (repairs[1]) radiusFixed.add(node.uuid());
+                                            if (repairs[2]) lockFixed.add(node.uuid());
+                                            if (repairs[3]) rotationFixed.add(node.uuid());
+                                            if (repairs[4]) mythicDataFixed.add(node.uuid());
+                                        }
+                                    }
+                                    if (!savedFixed.isEmpty() || !radiusFixed.isEmpty() || !lockFixed.isEmpty() || !rotationFixed.isEmpty() || !mythicDataFixed.isEmpty()) {
+                                        context.getSource().getSender().sendMessage("Repaired ModelEngine properties entities in the octree:");
+                                        if (!savedFixed.isEmpty()) {
+                                            context.getSource().getSender().sendMessage(" - " + savedFixed.size() + " entities had 'shouldBeSaved' fixed.");
+                                            if (verbose) {
+                                                for (UUID uuid : savedFixed) {
+                                                    context.getSource().getSender().sendMessage(Component.text("    - " + uuid.toString())
+                                                            .hoverEvent(HoverEvent.showText(Component.text("Click to copy UUID")))
+                                                            .clickEvent(ClickEvent.copyToClipboard(uuid.toString())));
+                                                }
+                                            }
+                                        }
+                                        if (!radiusFixed.isEmpty()) {
+                                            context.getSource().getSender().sendMessage(" - " + radiusFixed.size() + " entities had 'renderRadius' fixed.");
+                                            if (verbose) {
+                                                for (UUID uuid : radiusFixed) {
+                                                    context.getSource().getSender().sendMessage(Component.text("    - " + uuid.toString())
+                                                            .hoverEvent(HoverEvent.showText(Component.text("Click to copy UUID")))
+                                                            .clickEvent(ClickEvent.copyToClipboard(uuid.toString())));
+                                                }
+                                            }
+                                        }
+                                        if (!lockFixed.isEmpty()) {
+                                            context.getSource().getSender().sendMessage(" - " + lockFixed.size() + " entities had 'rotationLocked' fixed.");
+                                            if (verbose) {
+                                                for (UUID uuid : lockFixed) {
+                                                    context.getSource().getSender().sendMessage(Component.text("    - " + uuid.toString())
+                                                            .hoverEvent(HoverEvent.showText(Component.text("Click to copy UUID")))
+                                                            .clickEvent(ClickEvent.copyToClipboard(uuid.toString())));
+                                                }
+                                            }
+                                        }
+                                        if (!rotationFixed.isEmpty()) {
+                                            context.getSource().getSender().sendMessage(" - " + rotationFixed.size() + " entities had 'bodyRotation' fixed.");
+                                            if (verbose) {
+                                                for (UUID uuid : rotationFixed) {
+                                                    context.getSource().getSender().sendMessage(Component.text("    - " + uuid.toString())
+                                                            .hoverEvent(HoverEvent.showText(Component.text("Click to copy UUID")))
+                                                            .clickEvent(ClickEvent.copyToClipboard(uuid.toString())));
+                                                }
+                                            }
+                                        }
+                                        if (!mythicDataFixed.isEmpty()) {
+                                            context.getSource().getSender().sendMessage(" - " + mythicDataFixed.size() + " entities had MythicMob data reloaded.");
+                                            if (verbose) {
+                                                for (UUID uuid : mythicDataFixed) {
+                                                    context.getSource().getSender().sendMessage(Component.text("    - " + uuid.toString())
+                                                            .hoverEvent(HoverEvent.showText(Component.text("Click to copy UUID")))
+                                                            .clickEvent(ClickEvent.copyToClipboard(uuid.toString())));
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        context.getSource().getSender().sendMessage("No ModelEngine properties needed repair for entities in the octree.");
+                                    }
+                                    return Command.SINGLE_SUCCESS;
+                                })))
                 .then(Commands.literal("config-values")
                     .executes(context -> {
                         CommandSender sender = context.getSource().getSender();
@@ -74,7 +156,7 @@ public class CommandsManager {
                 .then(Commands.literal("set")
                         .executes(context -> {
                             CommandSender sender = context.getSource().getSender();
-                            sender.sendRichMessage("<red>Usage: /raycastedentityocclusions set <key> <value>");;
+                            sender.sendRichMessage("<red>Usage: /raycastedentityocclusions set <key> <value>");
                             return 0;
                         })
                         .then(Commands.argument("key", StringArgumentType.string())

@@ -50,7 +50,7 @@ public class Engine {
         ENTITY_CACHE.clear();
 
         for (Chunk chunk : cfg.octreeWorld.getLoadedChunks()) {
-            octree.insert(chunk);
+            octree.insert(cfg, chunk);
         }
 
         plugin.getLogger().info("Reconstructed octree[max_depth=" + octree.maxDepth() + "] with " + octree.getEntities() + " entities[lit=" + octree.getLit() + "] in " + octree.getChunks() + " loaded chunks. (More will be added as chunks are loaded)");

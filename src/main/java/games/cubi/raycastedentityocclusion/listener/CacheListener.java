@@ -33,7 +33,7 @@ public class CacheListener implements Listener {
                 chunk.getX() * 16.0, cfg.octreeWorld.getMinHeight(), chunk.getZ() * 16.0,
                 chunk.getX() * 16.0 + 16.0, cfg.octreeWorld.getMaxHeight(), chunk.getZ() * 16.0 + 16.0
         ))) {
-            Engine.getOctree().insert(chunk);
+            Engine.getOctree().insert(cfg, chunk);
         }
         manager.onChunkLoad(chunk);
     }

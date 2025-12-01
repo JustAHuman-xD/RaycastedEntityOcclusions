@@ -1,23 +1,64 @@
-debug-mode: false                 # enable debug particles
+debug-mode: false # enable debug particles
 
-snapshot-refresh-interval: 12000  # ticks between chunk snapshot refresh, won't change without restart
-engine-rate: 1                    # 1 = every tick; 2 = every other tick; 3 = every third tick; etc.
-recheck-interval: 20              # ticks between forced rechecks for visible entities
-repair-meg-interval: 1200         # ticks between meg repair attempts
+snapshot-refresh-interval: 12000 # ticks between chunk snapshot refresh, won't change without restart
+engine-rate: 1 # 1 = every tick; 2 = every other tick; 3 = every third tick; etc.
+recheck-interval: 20 # ticks between forced rechecks for visible entities
 
-always-show-radius: 16             # radius to always show entities
-raycast-radius: 64                # beyond this, entities auto-hide
-max-occluding-count: 3            # blocks before blocking
-search-radius: 128                 # search radius for entities
+repair-meg-interval: 1200 # ticks between meg repair attempts
+log-meg-repairs: false # log when meg entities are repaired
+minimum-meg-radius: 48 # the minimum render radius meg entities should have, if it's below this, "repair" it and set to this
+meg-rotation-locked: false # should meg entities have locked rotation? (not match the base entity rotation)
+meg-rotations: # per-entity rotations (entity-uuid: [yaw,pitch])
+  21ec46d3-6874-41af-817c-54559451f036: -180.0 # blacksmith
+  88b0faf2-713c-4c17-9faf-c1d1c6e56335: -102 # blacksmith sword stair guy
+  07f40625-9596-4e82-8210-66747c447168: 90.0 # repairman
+  259f2cda-4b4f-46fc-a03b-c1bb06d08637: 322.3 # blacksmith other anvil guy
+  50e8a8fb-44e7-4fa5-9c44-47045f8f55e8: 90.0 # blacksmith stoker guy
 
-octree-max-entities: 16           # maximum entities in octree before it splits
+  aa9c444b-043c-4ece-bda2-f25389203ca9: 180.0 # guard pair one
+  1d9d4525-f2ec-4733-885e-04bcd6f3290a: 0.0 # guard pair two
+  5bffc01a-27c6-49b1-9144-67eb522463ee: 45.0 # idle gate guard
+
+  3a4539d9-8ef4-4f35-b4f2-d2f1f189bc3f: 135.23 # playhosting
+
+  e9d6ef01-6396-4de9-94c7-53db19cb6cfb: 62.577 # entrance swing
+
+  b684ef1e-3059-4436-b46a-ad9e8b383836: 48.08 # cafe reader
+  4d8f2a93-dc5a-4b7d-b915-aa70f73e1b76: 270.0 # cafe writer
+  93d135ba-584d-4db6-bde7-a615cd8c6314: 90.0 # cafe sitter
+  de52b8c6-8088-4463-81b9-40de5b4625ac: 0.0 # cafe barista
+
+  f9bbcdbe-2460-474d-a870-f8b849d5be4a: -90.0 # orders
+
+  60c9f1e0-239a-4350-afb0-61fd128c7f4e: 180.0 # fountain waterer
+  f9e58461-27de-48ac-bf9b-0694d6bf31e1: -121.8 # fountain talking pair one
+  4b3f319f-7530-49d4-bc20-5782efdc2389: 56.4 # fountain talking pair two
+  656472ce-5e5c-42b4-aa92-12b4bf7ac893: 30.5 # fountain other talking pair one
+  2b5d524b-b197-40bb-8490-6aecabc1028f: -131.4 # fountain other talking pair two
+
+  631fadb9-feaa-4eae-bd50-3ff18cd42cf3: 307.7 # bank steps pair one
+  712e63b7-de21-426c-a6b1-4ba47d6a3265: 144.15 # bank steps pair two
+  d9c95de0-c902-4a84-8489-7b5c05614837: 88.64 # bank ledge
+
+  57c3ec27-3abc-4cd6-9e4f-4200982bc489: -180.0 # bank teller
+  b1b0e341-3c3d-479a-a2cc-cd345028e6b5: 125.16 # bank vault guy
+  96d752d6-24d9-4750-acde-a91227c94c1a: 90.0 # bank guy
+
+  dab2a4c4-ed41-4c1f-9dfd-e08c3905595a: 50.25 # mystic moira
+
+always-show-radius: 16 # radius to always show entities
+raycast-radius: 64 # beyond this, entities auto-hide
+max-occluding-count: 3 # blocks before blocking
+search-radius: 128 # search radius for entities
+
+octree-max-entities: 16 # maximum entities in octree before it splits
 octree-max-depth: 64
-octree-world: world               # The world to cull entities in
-octree-min:                       # world minimum to cull entities in, set to 0 to disable
+octree-world: spawn # The world to cull entities in
+octree-min: # world minimum to cull entities in, set to 0 to disable
   x: -136
   y: 33
   z: -270
-octree-max:                       # world maximum to cull entities in, set to 0 to disable
+octree-max: # world maximum to cull entities in, set to 0 to disable
   x: 403
   y: 144
   z: 251

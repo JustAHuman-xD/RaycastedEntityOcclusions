@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'games.cubi'
-version = '1.6.1'
+version = '1.6.2'
 
 repositories {
     mavenCentral()
@@ -26,6 +26,7 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
     compileOnly("com.nexomc:nexo:1.8.0")
     compileOnly("com.ticxo.modelengine:ModelEngine:R4.0.4")
+    compileOnly("io.lumine:Mythic-Dist:5.10.1")
 }
 
 def targetJavaVersion = 21

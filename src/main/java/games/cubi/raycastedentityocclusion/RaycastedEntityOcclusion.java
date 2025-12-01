@@ -63,7 +63,7 @@ public class RaycastedEntityOcclusion extends JavaPlugin implements CommandExecu
                 }
 
                 if (tick % cfg.megRepairInterval == 0) {
-                    Engine.getOctree().repairMegEntities();
+                    Engine.getOctree().repairMegEntities(cfg);
                 }
 
                 if (tick % cfg.engineRate == 0) {
