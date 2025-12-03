@@ -72,6 +72,7 @@ public class CommandsManager {
                                     Set<UUID> rotationFixed = new HashSet<>();
                                     Set<UUID> mythicDataFixed = new HashSet<>();
                                     Set<UUID> positionFixed = new HashSet<>();
+                                    long now = System.currentTimeMillis();
                                     if (octree != null) {
                                         List<EntityNode> nodes = octree.getAllNodes();
                                         for (EntityNode node : nodes) {
@@ -84,70 +85,67 @@ public class CommandsManager {
                                             if (repairs[5]) positionFixed.add(node.uuid());
                                         }
                                     }
-                                    if (!savedFixed.isEmpty() || !radiusFixed.isEmpty() || !lockFixed.isEmpty() || !rotationFixed.isEmpty() || !mythicDataFixed.isEmpty()) {
-                                        context.getSource().getSender().sendMessage("Repaired ModelEngine properties entities in the octree:");
-                                        if (!savedFixed.isEmpty()) {
-                                            context.getSource().getSender().sendMessage(" - " + savedFixed.size() + " entities had 'shouldBeSaved' fixed.");
-                                            if (verbose) {
-                                                for (UUID uuid : savedFixed) {
-                                                    context.getSource().getSender().sendMessage(Component.text("    - " + uuid.toString())
-                                                            .hoverEvent(HoverEvent.showText(Component.text("Click to copy UUID")))
-                                                            .clickEvent(ClickEvent.copyToClipboard(uuid.toString())));
-                                                }
+                                    long duration = System.currentTimeMillis() - now;
+                                    context.getSource().getSender().sendMessage("Attempted repair for npc entities in the octree in " + duration + "ms");
+                                    if (!savedFixed.isEmpty()) {
+                                        context.getSource().getSender().sendMessage(" - " + savedFixed.size() + " entities had 'shouldBeSaved' fixed.");
+                                        if (verbose) {
+                                            for (UUID uuid : savedFixed) {
+                                                context.getSource().getSender().sendMessage(Component.text("    - " + uuid.toString())
+                                                        .hoverEvent(HoverEvent.showText(Component.text("Click to copy UUID")))
+                                                        .clickEvent(ClickEvent.copyToClipboard(uuid.toString())));
                                             }
                                         }
-                                        if (!radiusFixed.isEmpty()) {
-                                            context.getSource().getSender().sendMessage(" - " + radiusFixed.size() + " entities had 'renderRadius' fixed.");
-                                            if (verbose) {
-                                                for (UUID uuid : radiusFixed) {
-                                                    context.getSource().getSender().sendMessage(Component.text("    - " + uuid.toString())
-                                                            .hoverEvent(HoverEvent.showText(Component.text("Click to copy UUID")))
-                                                            .clickEvent(ClickEvent.copyToClipboard(uuid.toString())));
-                                                }
+                                    }
+                                    if (!radiusFixed.isEmpty()) {
+                                        context.getSource().getSender().sendMessage(" - " + radiusFixed.size() + " entities had 'renderRadius' fixed.");
+                                        if (verbose) {
+                                            for (UUID uuid : radiusFixed) {
+                                                context.getSource().getSender().sendMessage(Component.text("    - " + uuid.toString())
+                                                        .hoverEvent(HoverEvent.showText(Component.text("Click to copy UUID")))
+                                                        .clickEvent(ClickEvent.copyToClipboard(uuid.toString())));
                                             }
                                         }
-                                        if (!lockFixed.isEmpty()) {
-                                            context.getSource().getSender().sendMessage(" - " + lockFixed.size() + " entities had 'rotationLocked' fixed.");
-                                            if (verbose) {
-                                                for (UUID uuid : lockFixed) {
-                                                    context.getSource().getSender().sendMessage(Component.text("    - " + uuid.toString())
-                                                            .hoverEvent(HoverEvent.showText(Component.text("Click to copy UUID")))
-                                                            .clickEvent(ClickEvent.copyToClipboard(uuid.toString())));
-                                                }
+                                    }
+                                    if (!lockFixed.isEmpty()) {
+                                        context.getSource().getSender().sendMessage(" - " + lockFixed.size() + " entities had 'rotationLocked' fixed.");
+                                        if (verbose) {
+                                            for (UUID uuid : lockFixed) {
+                                                context.getSource().getSender().sendMessage(Component.text("    - " + uuid.toString())
+                                                        .hoverEvent(HoverEvent.showText(Component.text("Click to copy UUID")))
+                                                        .clickEvent(ClickEvent.copyToClipboard(uuid.toString())));
                                             }
                                         }
-                                        if (!rotationFixed.isEmpty()) {
-                                            context.getSource().getSender().sendMessage(" - " + rotationFixed.size() + " entities had 'bodyRotation' fixed.");
-                                            if (verbose) {
-                                                for (UUID uuid : rotationFixed) {
-                                                    context.getSource().getSender().sendMessage(Component.text("    - " + uuid.toString())
-                                                            .hoverEvent(HoverEvent.showText(Component.text("Click to copy UUID")))
-                                                            .clickEvent(ClickEvent.copyToClipboard(uuid.toString())));
-                                                }
+                                    }
+                                    if (!rotationFixed.isEmpty()) {
+                                        context.getSource().getSender().sendMessage(" - " + rotationFixed.size() + " entities had 'bodyRotation' fixed.");
+                                        if (verbose) {
+                                            for (UUID uuid : rotationFixed) {
+                                                context.getSource().getSender().sendMessage(Component.text("    - " + uuid.toString())
+                                                        .hoverEvent(HoverEvent.showText(Component.text("Click to copy UUID")))
+                                                        .clickEvent(ClickEvent.copyToClipboard(uuid.toString())));
                                             }
                                         }
-                                        if (!positionFixed.isEmpty()) {
-                                            context.getSource().getSender().sendMessage(" - " + positionFixed.size() + " entities had 'position' fixed.");
-                                            if (verbose) {
-                                                for (UUID uuid : positionFixed) {
-                                                    context.getSource().getSender().sendMessage(Component.text("    - " + uuid.toString())
-                                                            .hoverEvent(HoverEvent.showText(Component.text("Click to copy UUID")))
-                                                            .clickEvent(ClickEvent.copyToClipboard(uuid.toString())));
-                                                }
+                                    }
+                                    if (!positionFixed.isEmpty()) {
+                                        context.getSource().getSender().sendMessage(" - " + positionFixed.size() + " entities had 'position' fixed.");
+                                        if (verbose) {
+                                            for (UUID uuid : positionFixed) {
+                                                context.getSource().getSender().sendMessage(Component.text("    - " + uuid.toString())
+                                                        .hoverEvent(HoverEvent.showText(Component.text("Click to copy UUID")))
+                                                        .clickEvent(ClickEvent.copyToClipboard(uuid.toString())));
                                             }
                                         }
-                                        if (!mythicDataFixed.isEmpty()) {
-                                            context.getSource().getSender().sendMessage(" - " + mythicDataFixed.size() + " entities had MythicMob data reloaded.");
-                                            if (verbose) {
-                                                for (UUID uuid : mythicDataFixed) {
-                                                    context.getSource().getSender().sendMessage(Component.text("    - " + uuid.toString())
-                                                            .hoverEvent(HoverEvent.showText(Component.text("Click to copy UUID")))
-                                                            .clickEvent(ClickEvent.copyToClipboard(uuid.toString())));
-                                                }
+                                    }
+                                    if (!mythicDataFixed.isEmpty()) {
+                                        context.getSource().getSender().sendMessage(" - " + mythicDataFixed.size() + " entities had MythicMob data reloaded.");
+                                        if (verbose) {
+                                            for (UUID uuid : mythicDataFixed) {
+                                                context.getSource().getSender().sendMessage(Component.text("    - " + uuid.toString())
+                                                        .hoverEvent(HoverEvent.showText(Component.text("Click to copy UUID")))
+                                                        .clickEvent(ClickEvent.copyToClipboard(uuid.toString())));
                                             }
                                         }
-                                    } else {
-                                        context.getSource().getSender().sendMessage("No ModelEngine properties needed repair for entities in the octree.");
                                     }
                                     return Command.SINGLE_SUCCESS;
                                 })))

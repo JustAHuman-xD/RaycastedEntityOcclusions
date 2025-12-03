@@ -5,7 +5,7 @@ snapshot-refresh-interval: 12000 # ticks between chunk snapshot refresh, won't c
 engine-rate: 1 # 1 = every tick; 2 = every other tick; 3 = every third tick; etc.
 recheck-interval: 20 # ticks between forced rechecks for visible entities
 
-repair-meg-interval: 1200 # ticks between meg repair attempts
+repair-meg-interval: 100 # ticks between meg repair attempts
 minimum-meg-radius: 48 # the minimum render radius meg entities should have, if it's below this, "repair" it and set to this
 meg-rotation-locked: false # should meg entities have locked rotation? (not match the base entity rotation)
 meg-positions: # per entity positions (entity-uuid: x,y,z)
@@ -133,7 +133,7 @@ meg-rotations: # per-entity rotations (entity-uuid: yaw)
   21ec46d3-6874-41af-817c-54559451f036: -180.0 # blacksmith
   50e8a8fb-44e7-4fa5-9c44-47045f8f55e8: 90.0 # mika
   259f2cda-4b4f-46fc-a03b-c1bb06d08637: 322.3 # sebastian
-  88b0faf2-713c-4c17-9faf-c1d1c6e56335: -102 # blade sharpener
+  88b0faf2-713c-4c17-9faf-c1d1c6e56335: -102.0 # blade sharpener
   07f40625-9596-4e82-8210-66747c447168: 90.0 # repairman
 
   3a4539d9-8ef4-4f35-b4f2-d2f1f189bc3f: 135.23 # playhosting
@@ -146,7 +146,7 @@ meg-rotations: # per-entity rotations (entity-uuid: yaw)
   ab7aa64a-9f2f-4670-90e1-3831542120c3: 13.0 # Fish Seller
   5cfdaf67-2a05-46f4-9f94-989d46ef66fc: -93.45 # Map Seller (??)
 
-  8167f20a-9542-4db4-a3d8-998e2357dab9: 39.50 # Spawn Picnic 1
+  8167f20a-9542-4db4-a3d8-998e2357dab9: 39.5 # Spawn Picnic 1
   465d64c0-b20d-4473-a1af-9fc86b55a012: 219.0 # Spawn Picnic 2
 
   b9c4e424-b6a9-4e32-bcb5-ce2fc4f74c22: -105.61255 # Red Faction Sweeper
@@ -182,7 +182,7 @@ meg-rotations: # per-entity rotations (entity-uuid: yaw)
 
   3b1dce32-70d2-4f7f-8857-a31bfc260785: -145.0 # harper
   996bdeec-dcd3-4f3c-b4f7-85ae7caec113: -88.349 # brynn
-  649e81ff-a8bd-4909-940e-1d4da875b644: -90 # eric
+  649e81ff-a8bd-4909-940e-1d4da875b644: -90.0 # eric
   a3601bfb-fdfc-4d13-b98d-c93166b50f74: 295.7237 # hazel
   0cfdb046-7387-4ba2-a921-ab6b18fbb86f: 153.66 # kiri
   cb7f2043-5dd4-4328-83f2-858dfc7120a7: 46.284 # julian
@@ -212,7 +212,7 @@ meg-rotations: # per-entity rotations (entity-uuid: yaw)
   bc7ad1f9-2e7a-4a9c-b6d1-78fb2762dd41: -50.0 # cave stone miner
   515abe12-2e47-4261-8677-7abaa73a3e02: -65.0 # cave crystal miner
 
-  f604ef9e-a7ec-4bc8-a4e6-c49419b8a5b9: -145 # back farmer gatherer
+  f604ef9e-a7ec-4bc8-a4e6-c49419b8a5b9: -145.0 # back farmer gatherer
   3e0c1c76-f355-4031-bfe5-0903a33cabb4: 80.0 # back farmer waterer
 
   5f230552-22e1-4f58-8294-ca3385d4ad13: -45.0 # bridge fisherman

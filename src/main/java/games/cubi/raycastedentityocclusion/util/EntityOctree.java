@@ -63,7 +63,7 @@ public class EntityOctree {
 
         if (cfg.logMegRepairs && (repairedMeg[0] > 0 || repairedMeg[1] > 0 || repairedMeg[2] > 0 || repairedMeg[3] > 0 || repairedMeg[4] > 0 || repairedMeg[5] > 0)) {
             Logger logger = RaycastedEntityOcclusion.instance.getLogger();
-            logger.warning("Repaired ModelEngine properties in chunk [" + chunk.getX() + ", " + chunk.getZ() + "]:");
+            logger.warning("Repaired npcs in chunk [" + chunk.getX() + ", " + chunk.getZ() + "]");
             if (repairedMeg[0] > 0) logger.warning(" - " + repairedMeg[0] + " entities had 'shouldBeSaved' fixed.");
             if (repairedMeg[1] > 0) logger.warning(" - " + repairedMeg[1] + " entities had 'renderRadius' fixed.");
             if (repairedMeg[2] > 0) logger.warning(" - " + repairedMeg[2] + " entities had 'rotationLocked' fixed.");
@@ -194,6 +194,7 @@ public class EntityOctree {
     }
 
     public void repairMegEntities(ConfigManager cfg) {
+        long now = System.currentTimeMillis();
         repairedMeg = new int[6];
         List<EntityNode> allNodes = getAllNodes();
         for (EntityNode node : allNodes) {
@@ -205,9 +206,10 @@ public class EntityOctree {
             if (repairs[4]) repairedMeg[4]++;
             if (repairs[5]) repairedMeg[5]++;
         }
-        if (cfg.logMegRepairs && (repairedMeg[0] > 0 || repairedMeg[1] > 0 || repairedMeg[2] > 0 || repairedMeg[3] > 0 || repairedMeg[4] > 0 || repairedMeg[5] > 0)) {
+        long duration = System.currentTimeMillis() - now;
+        if (cfg.logMegRepairs) {
             Logger logger = RaycastedEntityOcclusion.instance.getLogger();
-            logger.warning("Repaired ModelEngine properties for entities in octree:");
+            logger.warning("Attempted repair for npc entities in the octree in " + duration + "ms");
             if (repairedMeg[0] > 0) logger.warning(" - " + repairedMeg[0] + " entities had 'shouldBeSaved' fixed.");
             if (repairedMeg[1] > 0) logger.warning(" - " + repairedMeg[1] + " entities had 'renderRadius' fixed.");
             if (repairedMeg[2] > 0) logger.warning(" - " + repairedMeg[2] + " entities had 'rotationLocked' fixed.");

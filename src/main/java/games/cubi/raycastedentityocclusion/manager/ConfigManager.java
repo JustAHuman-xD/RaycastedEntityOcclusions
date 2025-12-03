@@ -1,7 +1,6 @@
 package games.cubi.raycastedentityocclusion.manager;
 
 import games.cubi.raycastedentityocclusion.engine.Engine;
-import io.papermc.paper.math.Rotation;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -11,7 +10,6 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -102,7 +100,7 @@ public class ConfigManager {
                     if (rotSection.isDouble(key)) {
                         megRotations.put(uuid, (float) rotSection.getDouble(key));
                     } else {
-                        plugin.getLogger().warning("Invalid rotation data for MEG UUID: " + key + ". Expected 2 values (yaw, pitch).");
+                        plugin.getLogger().warning("Invalid rotation data for MEG UUID: " + key + ". Should be a DOUBLE yaw value.");
                     }
                 } catch (IllegalArgumentException e) {
                     plugin.getLogger().warning("Invalid UUID format in MEG rotations: " + key);
