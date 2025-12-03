@@ -67,7 +67,7 @@ public record EntityNode(UUID uuid, Vector location, boolean light) {
             }
         }
         MobExecutor mobs = MythicBukkit.inst().getMobManager();
-        if (!mobs.isActiveMob(uuid)) {
+        if ((cfg.megPositions.containsKey(uuid) || cfg.megRotations.containsKey(uuid)) && !mobs.isActiveMob(uuid)) {
             Engine.scheduleSyncTask(() -> {
                 Entity entity = Engine.getEntity(uuid);
                 if (entity != null && mobs.isMythicMob(entity) && mobs.loadMythicMob(entity).isPresent()) {
