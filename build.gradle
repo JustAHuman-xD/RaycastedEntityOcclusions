@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'games.cubi'
-version = '1.6.2'
+version = '1.6.3-Realm'
 
 repositories {
     mavenCentral()

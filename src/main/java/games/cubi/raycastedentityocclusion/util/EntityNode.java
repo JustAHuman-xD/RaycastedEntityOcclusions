@@ -6,10 +6,10 @@ import com.ticxo.modelengine.api.ModelEngineAPI;
 import com.ticxo.modelengine.api.model.ModeledEntity;
 import com.ticxo.modelengine.api.nms.entity.wrapper.BodyRotationController;
 import games.cubi.raycastedentityocclusion.RaycastedEntityOcclusion;
+import games.cubi.raycastedentityocclusion.engine.Engine;
 import games.cubi.raycastedentityocclusion.manager.ConfigManager;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.mobs.MobExecutor;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 
@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public record EntityNode(UUID uuid, Vector location, boolean light) {
     public boolean[] repairMeg(ConfigManager cfg) {
-        boolean[] repaired = new boolean[5];
+        boolean[] repaired = new boolean[6];
         ModeledEntity modeled = ModelEngineAPI.getModeledEntity(uuid);
         if (modeled != null) {
             if (!modeled.shouldBeSaved()) {
@@ -31,6 +31,24 @@ public record EntityNode(UUID uuid, Vector location, boolean light) {
             if (modeled.isModelRotationLocked() != cfg.megRotationLocked) {
                 modeled.setModelRotationLocked(cfg.megRotationLocked);
                 repaired[2] = true;
+            }
+            if (cfg.megPositions.containsKey(uuid)) {
+                Engine.scheduleSyncTask(() -> {
+                    Entity entity = Engine.getEntity(uuid);
+                    if (entity != null) {
+                        Vector desired = cfg.megPositions.get(uuid);
+                        Vector current = entity.getLocation().toVector();
+                        // account for floating point precision issues
+                        if (desired.distanceSquared(current) > 0.01f) {
+                            entity.teleport(desired.toLocation(entity.getWorld()));
+                            Vector after = entity.getLocation().toVector();
+                            repaired[5] = after.distanceSquared(desired) <= 0.01f;
+                            if (!repaired[5]) {
+                                RaycastedEntityOcclusion.instance.getLogger().warning("Failed to repair ModelEngine position for entity " + uuid + ". Wanted " + desired + " but got " + after + ".");
+                            }
+                        }
+                    }
+                });
             }
             if (cfg.megRotations.containsKey(uuid)) {
                 BodyRotationController controller = modeled.getBase().getBodyRotationController();
@@ -50,8 +68,8 @@ public record EntityNode(UUID uuid, Vector location, boolean light) {
         }
         MobExecutor mobs = MythicBukkit.inst().getMobManager();
         if (!mobs.isActiveMob(uuid)) {
-            Bukkit.getScheduler().runTask(RaycastedEntityOcclusion.instance, () -> {
-                Entity entity = Bukkit.getEntity(uuid);
+            Engine.scheduleSyncTask(() -> {
+                Entity entity = Engine.getEntity(uuid);
                 if (entity != null && mobs.isMythicMob(entity) && mobs.loadMythicMob(entity).isPresent()) {
                     repaired[4] = true;
                 }

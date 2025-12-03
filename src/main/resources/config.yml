@@ -1,3 +1,4 @@
+log-meg-repairs: false
 debug-mode: false # enable debug particles
 
 snapshot-refresh-interval: 12000 # ticks between chunk snapshot refresh, won't change without restart
@@ -5,46 +6,233 @@ engine-rate: 1 # 1 = every tick; 2 = every other tick; 3 = every third tick; etc
 recheck-interval: 20 # ticks between forced rechecks for visible entities
 
 repair-meg-interval: 1200 # ticks between meg repair attempts
-log-meg-repairs: false # log when meg entities are repaired
 minimum-meg-radius: 48 # the minimum render radius meg entities should have, if it's below this, "repair" it and set to this
 meg-rotation-locked: false # should meg entities have locked rotation? (not match the base entity rotation)
-meg-rotations: # per-entity rotations (entity-uuid: [yaw,pitch])
-  21ec46d3-6874-41af-817c-54559451f036: -180.0 # blacksmith
-  88b0faf2-713c-4c17-9faf-c1d1c6e56335: -102 # blacksmith sword stair guy
-  07f40625-9596-4e82-8210-66747c447168: 90.0 # repairman
-  259f2cda-4b4f-46fc-a03b-c1bb06d08637: 322.3 # blacksmith other anvil guy
-  50e8a8fb-44e7-4fa5-9c44-47045f8f55e8: 90.0 # blacksmith stoker guy
+meg-positions: # per entity positions (entity-uuid: x,y,z)
+  21ec46d3-6874-41af-817c-54559451f036: 67.5, 74.0, 25.5 # blacksmith
+  50e8a8fb-44e7-4fa5-9c44-47045f8f55e8: 71.1667, 74.0, 30.0 # mika
+  259f2cda-4b4f-46fc-a03b-c1bb06d08637: 72.9125, 74.0, 23.74 # sebastian
+  88b0faf2-713c-4c17-9faf-c1d1c6e56335: 73.872, 75.5, 34.2035 # blade sharpener
+  07f40625-9596-4e82-8210-66747c447168: 86.5, 74.0, 29.5 # repairman
 
-  aa9c444b-043c-4ece-bda2-f25389203ca9: 180.0 # guard pair one
-  1d9d4525-f2ec-4733-885e-04bcd6f3290a: 0.0 # guard pair two
-  5bffc01a-27c6-49b1-9144-67eb522463ee: 45.0 # idle gate guard
+  3a4539d9-8ef4-4f35-b4f2-d2f1f189bc3f: 12.5, 77.0, 17.5 # playhosting
+  6e148d34-9302-4662-b1fb-1edf76e86501: 13.5, 77.0, 7.5 # store
+  cb7273e7-7b50-46fd-8eaf-c71369fb4a13: 10.5, 77.0, 5.5 # rtp
+
+  0a5a69a0-4111-4d0b-8da6-d69f21143d8c: 25.5, 73.0, 26.5 # builder ben
+  2e16f846-0149-421e-8ca5-da2a8b85ad7e: 30.5, 74.0, 30.57 # lute player
+
+  a42889c1-721e-4df7-b93f-5fc005a72e8c: 40.5, 73.0, 37.68 # produce npc
+  40e54a45-6be4-4254-a28b-afbc79c67ef7: 48.4, 73.0, 32.63 # ?????
+  8b955f12-d0f1-475f-b080-d4c6076f22b0: 52.3, 73.0, 41.6 # archeologist
+  b34100cb-fb18-4c46-8ecf-ea7d7decb0cf: 52.44, 73.0, 52.91 # Knight Seller (??)
+  ab7aa64a-9f2f-4670-90e1-3831542120c3: 39.76, 73.0, 52.35 # Fish Seller
+  5cfdaf67-2a05-46f4-9f94-989d46ef66fc: 32.5, 73.0, 57.0 # Map Seller (??)
+  2267d655-71e6-4c37-bb8a-c9c5c08172fe: 37.0, 73.0, 62.0 # Wood Seller (??)
+
+  8167f20a-9542-4db4-a3d8-998e2357dab9: 17.642, 73.0, 41.115 # Spawn Picnic 1
+  465d64c0-b20d-4473-a1af-9fc86b55a012: 16.91, 73.0, 42.23 # Spawn Picnic 2
+
+  b9c4e424-b6a9-4e32-bcb5-ce2fc4f74c22: 57.19, 81.0, 90.61 # Red Faction Sweeper
+  fdb7ca30-c808-486f-8c79-eb4f622b6a9b: 50.48, 81.0, 104.47 # Cage
+
+  a17074bb-bc11-44f2-baf4-720aefe4cb7a: 90.6, 82.0, 101.356 # Furniture Seller
+
+  e9d6ef01-6396-4de9-94c7-53db19cb6cfb: 53.9, 73.0, -17.223 # Spawn Swing Set
+
+  de52b8c6-8088-4463-81b9-40de5b4625ac: 42.71, 75.0, -54.4256 # Barista
+  4d8f2a93-dc5a-4b7d-b915-aa70f73e1b76: 42.55, 75.0, -43.532 # Elliot
+  93d135ba-584d-4db6-bde7-a615cd8c6314: 45.56, 75.0, -41.46 # Reva
+  b684ef1e-3059-4436-b46a-ad9e8b383836: 30.45, 75.0, -52.35 # Rami
+
+  3cade43e-b800-4223-9592-58b6e9b22fd2: 45.456, 73.0, 16.4675 # Guard Ost
+  5bffc01a-27c6-49b1-9144-67eb522463ee: 45.46, 73.0, 5.5 # other gate guard
+  1d9d4525-f2ec-4733-885e-04bcd6f3290a: 53.5, 73.0, 4.5 # guard gate left
+  aa9c444b-043c-4ece-bda2-f25389203ca9: 53.5, 73.0, 18.5 # guard gate right
+
+  60c9f1e0-239a-4350-afb0-61fd128c7f4e: 72.144, 73.5, -5.358 # fountain gardener
+  4b3f319f-7530-49d4-bc20-5782efdc2389: 82.153, 73.0, -0.64 # fountain left pair one
+  f9e58461-27de-48ac-bf9b-0694d6bf31e1: 80.87, 73.0, 0.24 # fountain left pair two
+  2b5d524b-b197-40bb-8490-6aecabc1028f: 92.356, 73.0, 14.213 # fountain right pair one
+  656472ce-5e5c-42b4-aa92-12b4bf7ac893: 93.81, 73.0, 13.0 # fountain right pair two
+
+  f9bbcdbe-2460-474d-a870-f8b849d5be4a: 65.452, 73.0, -11.4161 # orders
+  39a2437f-45bc-4bed-8a86-7a9790f4c155: 67.5, 74.0, -24.5 # auctioneer
+
+  631fadb9-feaa-4eae-bd50-3ff18cd42cf3: 86.48, 73.0, -11.286 # bank steps pair one
+  712e63b7-de21-426c-a6b1-4ba47d6a3265: 87.16, 73.0, -9.024 # bank steps pair two
+  d9c95de0-c902-4a84-8489-7b5c05614837: 90.3, 76.0, -11.42 # graham
+  57c3ec27-3abc-4cd6-9e4f-4200982bc489: 100.5, 76.0, -14.5 # lei
+  b1b0e341-3c3d-479a-a2cc-cd345028e6b5: 104.5, 76.0, -16.5 # agent z
+  96d752d6-24d9-4750-acde-a91227c94c1a: 111.5, 76.0, -25.5 # banker
+
+  93e9f4c4-ffa4-4d97-9d72-6a46e49eedca: 124.665, 77.0, 47.4254 # cosmetic seller
+
+  3b1dce32-70d2-4f7f-8857-a31bfc260785: 116.54, 79.0, 22.5222 # harper
+  996bdeec-dcd3-4f3c-b4f7-85ae7caec113: 134.3, 79.0, 14.5 # brynn
+  649e81ff-a8bd-4909-940e-1d4da875b644: 121.5, 79.0, 13.5 # eric
+  5e8d36a4-ca43-43af-9404-acfac723a5f3: 128.5, 79.0, 1.5 # enchanter
+  a3601bfb-fdfc-4d13-b98d-c93166b50f74: 124.06, 79.0, 0.807 # hazel
+  0cfdb046-7387-4ba2-a921-ab6b18fbb86f: 119.0, 79.0, 0.51 # kiri
+  cb7f2043-5dd4-4328-83f2-858dfc7120a7: 116.64, 79.0, 2.41 # julian
+  e8fe68a4-3838-42f5-a533-4021cb68599f: 130.524, 79.0, -9.2635 # avery
+  be7fb664-a64d-4101-8424-5ebe48b0985c: 137.5965, 79.0, -2.51 # ada
+  d0bad21e-7d64-4a44-b52b-75d9340d1daf: 139.21, 79.0, 14.35 # leila
+
+  960dd503-1f48-43c4-ae89-bcce6b3592b3: 141.52, 84.0, 3.74 # sasha
+
+  071e712b-551c-4353-a1a8-a4d3b22bcd46: 122.5, 89.0, 11.5 # artificer
+  4c8c4c90-90ad-4315-a0e2-7fc772db3530: 130.56, 89.0, 9.825 # andre
+  1fe82c87-cad2-4466-80be-1e2d865b1efd: 136.565, 89.0, 14.525 # clara
+  f8dd8bc1-1f8a-4f52-8966-ff8d12a936b8: 131.33, 89.0, -1.3 # basil
+
+  fae4bb42-9f0c-422d-b4bf-8ea74eafa62a: 109.545, 79.0, 3.473 # diana
+
+  0194ad3d-84a2-4e86-b13f-fbef936e8694: 99.563, 81.0, -87.459 # green knight
+  e3f54edf-db50-420b-8132-1e12947bbfd9: 101.5, 81.0, -99.5 # honey
+
+  48d42431-120b-43ec-a7c6-1658d7ee27f4: 129.58, 78.0, -52.45 # potion shopper
+  dab2a4c4-ed41-4c1f-9dfd-e08c3905595a: 139.5, 78.0, -55.5 # moira
+
+  fb312726-3d3f-462a-8958-c3c696868cb7: 178.076, 80.9375, -84.0 # left farmer waterer
+  f1d75617-f457-4a1e-943a-5da995603078: 160.58, 80.9375, -61.783 # right farmer
+  a83edb31-5c15-49d8-b4a2-d8181f8c9943: 172.675, 80.9375, -58.1064 # right farmer waterer 1
+  04b85996-5b68-4688-acee-a1aa08ba791d: 163.9, 80.9375, -47.08 # right farmer waterer 2
+  8af40d90-bc2c-464d-bec8-51f25fa47bec: 176.6, 81.0, -43.76 # flo
+
+  14e23dcf-23a9-41b9-b6f2-0cd35fbfa05f: 185.74, 81.0, -68.0 # miles
+  bc7ad1f9-2e7a-4a9c-b6d1-78fb2762dd41: 199.19, 82.5, -63.67 # cave stone miner
+  515abe12-2e47-4261-8677-7abaa73a3e02: 200.88, 82.0, -70.13 # cave crystal miner
+
+  f604ef9e-a7ec-4bc8-a4e6-c49419b8a5b9: 203.805, 79.0, -2.915 # back farmer gatherer
+  3e0c1c76-f355-4031-bfe5-0903a33cabb4: 208.87, 78.9375, -11.18 # back farmer waterer
+
+  5f230552-22e1-4f58-8294-ca3385d4ad13: 160.96, 75.0, -19.1034 # bridge fisherman
+  558a49a8-60c8-402d-a27e-b6f98f9344a2: 166.014, 74.0, -0.47 # clothes washer
+  e21e7777-0616-41e8-8cc2-eb49eaaa22da: 177.4, 73.6, -7.5 # boat fisherman
+  ce6ec089-8a85-478d-9346-589338e52195: 188.3, 74.0, -13.37 # pond edge fisherman
+
+  e6b776bb-5bff-4d5e-a101-6012a3d15f83: 165.55, 82.0, 33.77 # left yellow knight
+  5633a5f8-e78a-4aaa-b600-aea18c388fa3: 165.5, 82.0, 40.5 # right yellow knight
+  ef177721-b0d9-4048-afd9-f638d067ae6b: 176.56, 82.0, 35.468 # inner yellow knight
+  a9ed4689-a4c6-4a88-a48a-cb4a0ade6426: 190.75, 82.0, 43.715 # yellow sweeper
+  38239df5-4230-40ed-aa21-20fb67c8bde7: 193.65, 84.0, 37.3555 # noah
+  c459b4ca-b47d-4366-abad-8a7af596ae56: 175.19, 82.0, 28.3 # yellow cook
+
+  14388bf5-3c5c-4bfe-872f-9f41facc8655: 156.68, 77.0, 76.33 # spruce lumberjack
+  6ce4dc61-27a9-4a7c-bd15-d4846f88f3cd: 176.5, 80.0, 96.315 # dual wield lumberjack
+  0ca0b78e-d995-47de-8013-586e86af9f45: 185.516, 81.0, 115.0 # lumberjack saw pair
+  ecf37f62-eab7-4c00-a926-0082c7d3929f: 196.51, 86.0, 93.23 # luna
+
+  ce7d02db-fd33-4a16-83a1-38e974f36d3f: 135.5, 77.0, 118.5 # atlas
+
+  627df985-dfc1-400d-a5df-72bddb56e8b4: -64.541, 46.0, -19.376 # spawn dock fisherman
+  4c831ac2-3c66-4a4f-8d11-c96e0a97cd0b: -69.5636, 44.645, -2.1 # outer boat fisherman
+
+meg-rotations: # per-entity rotations (entity-uuid: yaw)
+  21ec46d3-6874-41af-817c-54559451f036: -180.0 # blacksmith
+  50e8a8fb-44e7-4fa5-9c44-47045f8f55e8: 90.0 # mika
+  259f2cda-4b4f-46fc-a03b-c1bb06d08637: 322.3 # sebastian
+  88b0faf2-713c-4c17-9faf-c1d1c6e56335: -102 # blade sharpener
+  07f40625-9596-4e82-8210-66747c447168: 90.0 # repairman
 
   3a4539d9-8ef4-4f35-b4f2-d2f1f189bc3f: 135.23 # playhosting
 
-  e9d6ef01-6396-4de9-94c7-53db19cb6cfb: 62.577 # entrance swing
+  0a5a69a0-4111-4d0b-8da6-d69f21143d8c: 225.0 # builder ben
+  2e16f846-0149-421e-8ca5-da2a8b85ad7e: -90.0 # lute player
 
-  b684ef1e-3059-4436-b46a-ad9e8b383836: 48.08 # cafe reader
-  4d8f2a93-dc5a-4b7d-b915-aa70f73e1b76: 270.0 # cafe writer
-  93d135ba-584d-4db6-bde7-a615cd8c6314: 90.0 # cafe sitter
-  de52b8c6-8088-4463-81b9-40de5b4625ac: 0.0 # cafe barista
+  40e54a45-6be4-4254-a28b-afbc79c67ef7: 45.0 # ?????
+  8b955f12-d0f1-475f-b080-d4c6076f22b0: 115.76 # archeologist
+  ab7aa64a-9f2f-4670-90e1-3831542120c3: 13.0 # Fish Seller
+  5cfdaf67-2a05-46f4-9f94-989d46ef66fc: -93.45 # Map Seller (??)
+
+  8167f20a-9542-4db4-a3d8-998e2357dab9: 39.50 # Spawn Picnic 1
+  465d64c0-b20d-4473-a1af-9fc86b55a012: 219.0 # Spawn Picnic 2
+
+  b9c4e424-b6a9-4e32-bcb5-ce2fc4f74c22: -105.61255 # Red Faction Sweeper
+  fdb7ca30-c808-486f-8c79-eb4f622b6a9b: -180.0 # Cage
+
+  a17074bb-bc11-44f2-baf4-720aefe4cb7a: 82.5 # Furniture Seller
+
+  e9d6ef01-6396-4de9-94c7-53db19cb6cfb: 62.577 # Spawn Swing Set
+
+  de52b8c6-8088-4463-81b9-40de5b4625ac: 0.0 # Barista
+  4d8f2a93-dc5a-4b7d-b915-aa70f73e1b76: 270.0 # Elliot
+  93d135ba-584d-4db6-bde7-a615cd8c6314: 90.0 # Reva
+  b684ef1e-3059-4436-b46a-ad9e8b383836: 48.08 # Rami
+
+  5bffc01a-27c6-49b1-9144-67eb522463ee: 45.0 # other gate guard
+  1d9d4525-f2ec-4733-885e-04bcd6f3290a: 0.0 # guard gate left
+  aa9c444b-043c-4ece-bda2-f25389203ca9: 180.0 # guard gate right
+
+  60c9f1e0-239a-4350-afb0-61fd128c7f4e: 180.0 # fountain gardener
+  4b3f319f-7530-49d4-bc20-5782efdc2389: 56.4 # fountain left pair one
+  f9e58461-27de-48ac-bf9b-0694d6bf31e1: -121.8 # fountain left pair two
+  2b5d524b-b197-40bb-8490-6aecabc1028f: -131.4 # fountain right pair one
+  656472ce-5e5c-42b4-aa92-12b4bf7ac893: 30.5 # fountain right pair two
 
   f9bbcdbe-2460-474d-a870-f8b849d5be4a: -90.0 # orders
 
-  60c9f1e0-239a-4350-afb0-61fd128c7f4e: 180.0 # fountain waterer
-  f9e58461-27de-48ac-bf9b-0694d6bf31e1: -121.8 # fountain talking pair one
-  4b3f319f-7530-49d4-bc20-5782efdc2389: 56.4 # fountain talking pair two
-  656472ce-5e5c-42b4-aa92-12b4bf7ac893: 30.5 # fountain other talking pair one
-  2b5d524b-b197-40bb-8490-6aecabc1028f: -131.4 # fountain other talking pair two
-
   631fadb9-feaa-4eae-bd50-3ff18cd42cf3: 307.7 # bank steps pair one
   712e63b7-de21-426c-a6b1-4ba47d6a3265: 144.15 # bank steps pair two
-  d9c95de0-c902-4a84-8489-7b5c05614837: 88.64 # bank ledge
+  d9c95de0-c902-4a84-8489-7b5c05614837: 88.64 # graham
+  57c3ec27-3abc-4cd6-9e4f-4200982bc489: -180.0 # lei
+  b1b0e341-3c3d-479a-a2cc-cd345028e6b5: 125.16 # agent z
+  96d752d6-24d9-4750-acde-a91227c94c1a: 90.0 # banker
 
-  57c3ec27-3abc-4cd6-9e4f-4200982bc489: -180.0 # bank teller
-  b1b0e341-3c3d-479a-a2cc-cd345028e6b5: 125.16 # bank vault guy
-  96d752d6-24d9-4750-acde-a91227c94c1a: 90.0 # bank guy
+  3b1dce32-70d2-4f7f-8857-a31bfc260785: -145.0 # harper
+  996bdeec-dcd3-4f3c-b4f7-85ae7caec113: -88.349 # brynn
+  649e81ff-a8bd-4909-940e-1d4da875b644: -90 # eric
+  a3601bfb-fdfc-4d13-b98d-c93166b50f74: 295.7237 # hazel
+  0cfdb046-7387-4ba2-a921-ab6b18fbb86f: 153.66 # kiri
+  cb7f2043-5dd4-4328-83f2-858dfc7120a7: 46.284 # julian
+  e8fe68a4-3838-42f5-a533-4021cb68599f: 0.0 # avery
+  be7fb664-a64d-4101-8424-5ebe48b0985c: 0.0 # ada
+  d0bad21e-7d64-4a44-b52b-75d9340d1daf: -90.0 # leila
 
-  dab2a4c4-ed41-4c1f-9dfd-e08c3905595a: 50.25 # mystic moira
+  960dd503-1f48-43c4-ae89-bcce6b3592b3: 88.3 # sasha
+
+  071e712b-551c-4353-a1a8-a4d3b22bcd46: 225.0 # artificer
+  4c8c4c90-90ad-4315-a0e2-7fc772db3530: 305.64 # andre
+  1fe82c87-cad2-4466-80be-1e2d865b1efd: 0.0 # clara
+  f8dd8bc1-1f8a-4f52-8966-ff8d12a936b8: 0.0 # basil
+
+  fae4bb42-9f0c-422d-b4bf-8ea74eafa62a: 90.0 # diana
+
+  e3f54edf-db50-420b-8132-1e12947bbfd9: 0.0 # honey
+
+  48d42431-120b-43ec-a7c6-1658d7ee27f4: 180.0 # potion shopper
+  dab2a4c4-ed41-4c1f-9dfd-e08c3905595a: 50.25 # moira
+
+  fb312726-3d3f-462a-8958-c3c696868cb7: -170.0 # left farmer waterer
+  f1d75617-f457-4a1e-943a-5da995603078: 173.37 # right farmer
+  a83edb31-5c15-49d8-b4a2-d8181f8c9943: 306.3 # right farmer waterer 1
+  04b85996-5b68-4688-acee-a1aa08ba791d: -136.0 # right farmer waterer 2
+
+  bc7ad1f9-2e7a-4a9c-b6d1-78fb2762dd41: -50.0 # cave stone miner
+  515abe12-2e47-4261-8677-7abaa73a3e02: -65.0 # cave crystal miner
+
+  f604ef9e-a7ec-4bc8-a4e6-c49419b8a5b9: -145 # back farmer gatherer
+  3e0c1c76-f355-4031-bfe5-0903a33cabb4: 80.0 # back farmer waterer
+
+  5f230552-22e1-4f58-8294-ca3385d4ad13: -45.0 # bridge fisherman
+  558a49a8-60c8-402d-a27e-b6f98f9344a2: 180.0 # clothes washer
+  e21e7777-0616-41e8-8cc2-eb49eaaa22da: 227.5 # boat fisherman
+  ce6ec089-8a85-478d-9346-589338e52195: 59.5 # pond edge fisherman
+
+  5633a5f8-e78a-4aaa-b600-aea18c388fa3: 126.16 # right yellow knight
+  ef177721-b0d9-4048-afd9-f638d067ae6b: 45.0 # inner yellow knight
+  a9ed4689-a4c6-4a88-a48a-cb4a0ade6426: 99.77 # yellow sweeper
+  38239df5-4230-40ed-aa21-20fb67c8bde7: 45.0 # noah
+  c459b4ca-b47d-4366-abad-8a7af596ae56: -180.0 # yellow cook
+
+  14388bf5-3c5c-4bfe-872f-9f41facc8655: 167.66 # spruce lumberjack
+  0ca0b78e-d995-47de-8013-586e86af9f45: 126.22656 # lumberjack saw pair
+
+  ce7d02db-fd33-4a16-83a1-38e974f36d3f: -180.0 # atlas
+
+  627df985-dfc1-400d-a5df-72bddb56e8b4: 180.0 # spawn dock fisherman
+  4c831ac2-3c66-4a4f-8d11-c96e0a97cd0b: 0.0 # outer boat fisherman
 
 always-show-radius: 16 # radius to always show entities
 raycast-radius: 64 # beyond this, entities auto-hide

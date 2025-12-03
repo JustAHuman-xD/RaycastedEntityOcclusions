@@ -41,7 +41,7 @@ public class EntityOctree {
     public void insert(ConfigManager cfg, Chunk chunk) {
         if (!cachedChunks.add(new ChunkPos(null, Chunk.getChunkKey(chunk.getX(), chunk.getZ())))) return;
 
-        repairedMeg = new int[5];
+        repairedMeg = new int[6];
         for (Entity entity : chunk.getEntities()) {
             if (entity instanceof Player || !entity.isVisibleByDefault()) {
                 if (entity instanceof Player) skippedPlayers++;
@@ -56,17 +56,19 @@ public class EntityOctree {
             if (repairs[2]) repairedMeg[2]++;
             if (repairs[3]) repairedMeg[3]++;
             if (repairs[4]) repairedMeg[4]++;
+            if (repairs[5]) repairedMeg[5]++;
             insert(node);
             entities++;
         }
 
-        if (cfg.logMegRepairs && (repairedMeg[0] > 0 || repairedMeg[1] > 0 || repairedMeg[2] > 0 || repairedMeg[3] > 0)) {
+        if (cfg.logMegRepairs && (repairedMeg[0] > 0 || repairedMeg[1] > 0 || repairedMeg[2] > 0 || repairedMeg[3] > 0 || repairedMeg[4] > 0 || repairedMeg[5] > 0)) {
             Logger logger = RaycastedEntityOcclusion.instance.getLogger();
             logger.warning("Repaired ModelEngine properties in chunk [" + chunk.getX() + ", " + chunk.getZ() + "]:");
             if (repairedMeg[0] > 0) logger.warning(" - " + repairedMeg[0] + " entities had 'shouldBeSaved' fixed.");
             if (repairedMeg[1] > 0) logger.warning(" - " + repairedMeg[1] + " entities had 'renderRadius' fixed.");
             if (repairedMeg[2] > 0) logger.warning(" - " + repairedMeg[2] + " entities had 'rotationLocked' fixed.");
             if (repairedMeg[3] > 0) logger.warning(" - " + repairedMeg[3] + " entities had 'bodyRotation' fixed.");
+            if (repairedMeg[5] > 0) logger.warning(" - " + repairedMeg[5] + " entities had 'position' fixed.");
             if (repairedMeg[4] > 0) logger.warning(" - " + repairedMeg[4] + " entities had MythicMob data reloaded.");
         }
     }
@@ -192,7 +194,7 @@ public class EntityOctree {
     }
 
     public void repairMegEntities(ConfigManager cfg) {
-        repairedMeg = new int[5];
+        repairedMeg = new int[6];
         List<EntityNode> allNodes = getAllNodes();
         for (EntityNode node : allNodes) {
             boolean[] repairs = node.repairMeg(cfg);
@@ -201,14 +203,16 @@ public class EntityOctree {
             if (repairs[2]) repairedMeg[2]++;
             if (repairs[3]) repairedMeg[3]++;
             if (repairs[4]) repairedMeg[4]++;
+            if (repairs[5]) repairedMeg[5]++;
         }
-        if (cfg.logMegRepairs && (repairedMeg[0] > 0 || repairedMeg[1] > 0 || repairedMeg[2] > 0 || repairedMeg[3] > 0)) {
+        if (cfg.logMegRepairs && (repairedMeg[0] > 0 || repairedMeg[1] > 0 || repairedMeg[2] > 0 || repairedMeg[3] > 0 || repairedMeg[4] > 0 || repairedMeg[5] > 0)) {
             Logger logger = RaycastedEntityOcclusion.instance.getLogger();
             logger.warning("Repaired ModelEngine properties for entities in octree:");
             if (repairedMeg[0] > 0) logger.warning(" - " + repairedMeg[0] + " entities had 'shouldBeSaved' fixed.");
             if (repairedMeg[1] > 0) logger.warning(" - " + repairedMeg[1] + " entities had 'renderRadius' fixed.");
             if (repairedMeg[2] > 0) logger.warning(" - " + repairedMeg[2] + " entities had 'rotationLocked' fixed.");
             if (repairedMeg[3] > 0) logger.warning(" - " + repairedMeg[3] + " entities had 'bodyRotation' fixed.");
+            if (repairedMeg[5] > 0) logger.warning(" - " + repairedMeg[5] + " entities had 'position' fixed.");
             if (repairedMeg[4] > 0) logger.warning(" - " + repairedMeg[4] + " entities had MythicMob data reloaded.");
         }
     }

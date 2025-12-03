@@ -28,6 +28,7 @@ public class ConfigManager {
     public boolean logMegRepairs;
     public int megMinRenderRadius;
     public boolean megRotationLocked;
+    public Map<UUID, Vector> megPositions;
     public Map<UUID, Float> megRotations;
 
     public int alwaysShowRadius;
@@ -62,6 +63,34 @@ public class ConfigManager {
         logMegRepairs = cfg.getBoolean("log-meg-repairs", false);
         megMinRenderRadius = cfg.getInt("minimum-meg-radius", 48);
         megRotationLocked = cfg.getBoolean("meg-rotation-locked", true);
+        megPositions = new HashMap<>();
+        ConfigurationSection posSection = cfg.getConfigurationSection("meg-positions");
+        if (posSection == null) {
+            plugin.getLogger().info("No MEG positions found in config.");
+        } else {
+            for (String key : posSection.getKeys(false)) {
+                try {
+                    UUID uuid = UUID.fromString(key);
+                    String[] parts = posSection.getString(key, "0,0,0").split(",");
+                    if (parts.length != 3) {
+                        plugin.getLogger().warning("Invalid position data for MEG UUID: " + key + ". Expected 3 values (x, y, z).");
+                        continue;
+                    }
+                    Vector vec = new Vector(
+                            Double.parseDouble(parts[0].trim()),
+                            Double.parseDouble(parts[1].trim()),
+                            Double.parseDouble(parts[2].trim())
+                    );
+                    megPositions.put(uuid, vec);
+                } catch (NumberFormatException e) {
+                    plugin.getLogger().warning("Invalid number format in MEG position for UUID: " + key);
+                } catch (IllegalArgumentException e) {
+                    plugin.getLogger().warning("Invalid UUID format in MEG positions: " + key);
+                }
+            }
+            plugin.getLogger().info("Loaded " + megPositions.size() + " MEG positions from config.");
+        }
+
         megRotations = new HashMap<>();
         ConfigurationSection rotSection = cfg.getConfigurationSection("meg-rotations");
         if (rotSection == null) {

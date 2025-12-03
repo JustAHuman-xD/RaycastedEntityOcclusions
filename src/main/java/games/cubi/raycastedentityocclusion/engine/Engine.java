@@ -38,6 +38,8 @@ public class Engine {
     private static final Map<UUID, Map<UUID, ?>> INVERTED_VISIBILITY_CACHE = new HashMap<>();
     private static final Map<UUID, WeakReference<Entity>> ENTITY_CACHE = new HashMap<>();
 
+    private static final List<Runnable> SYNC_TASKS = new ArrayList<>();
+
     private static EntityOctree octree;
 
     public static void reconstructOctree(JavaPlugin plugin, ConfigManager cfg) {
@@ -94,6 +96,13 @@ public class Engine {
 
         // ----- PHASE 3: SYNC APPLY -----
         Bukkit.getScheduler().runTask(plugin, () -> {
+            if (!SYNC_TASKS.isEmpty()) {
+                for (Runnable task : SYNC_TASKS) {
+                    task.run();
+                }
+                SYNC_TASKS.clear();
+            }
+
             for (RayResult r : results) {
                 Player p = getPlayer(r.playerId);
                 Entity ent = getEntity(r.entityId);
@@ -109,6 +118,10 @@ public class Engine {
             }
             RaycastedEntityOcclusion.running.set(false);
         });
+    }
+
+    public static void scheduleSyncTask(Runnable task) {
+        SYNC_TASKS.add(task);
     }
 
     public static EntityOctree getOctree() {

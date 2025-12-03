@@ -71,6 +71,7 @@ public class CommandsManager {
                                     Set<UUID> lockFixed = new HashSet<>();
                                     Set<UUID> rotationFixed = new HashSet<>();
                                     Set<UUID> mythicDataFixed = new HashSet<>();
+                                    Set<UUID> positionFixed = new HashSet<>();
                                     if (octree != null) {
                                         List<EntityNode> nodes = octree.getAllNodes();
                                         for (EntityNode node : nodes) {
@@ -80,6 +81,7 @@ public class CommandsManager {
                                             if (repairs[2]) lockFixed.add(node.uuid());
                                             if (repairs[3]) rotationFixed.add(node.uuid());
                                             if (repairs[4]) mythicDataFixed.add(node.uuid());
+                                            if (repairs[5]) positionFixed.add(node.uuid());
                                         }
                                     }
                                     if (!savedFixed.isEmpty() || !radiusFixed.isEmpty() || !lockFixed.isEmpty() || !rotationFixed.isEmpty() || !mythicDataFixed.isEmpty()) {
@@ -118,6 +120,16 @@ public class CommandsManager {
                                             context.getSource().getSender().sendMessage(" - " + rotationFixed.size() + " entities had 'bodyRotation' fixed.");
                                             if (verbose) {
                                                 for (UUID uuid : rotationFixed) {
+                                                    context.getSource().getSender().sendMessage(Component.text("    - " + uuid.toString())
+                                                            .hoverEvent(HoverEvent.showText(Component.text("Click to copy UUID")))
+                                                            .clickEvent(ClickEvent.copyToClipboard(uuid.toString())));
+                                                }
+                                            }
+                                        }
+                                        if (!positionFixed.isEmpty()) {
+                                            context.getSource().getSender().sendMessage(" - " + positionFixed.size() + " entities had 'position' fixed.");
+                                            if (verbose) {
+                                                for (UUID uuid : positionFixed) {
                                                     context.getSource().getSender().sendMessage(Component.text("    - " + uuid.toString())
                                                             .hoverEvent(HoverEvent.showText(Component.text("Click to copy UUID")))
                                                             .clickEvent(ClickEvent.copyToClipboard(uuid.toString())));
