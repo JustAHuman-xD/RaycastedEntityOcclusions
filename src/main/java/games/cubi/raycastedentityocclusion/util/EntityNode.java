@@ -50,10 +50,12 @@ public record EntityNode(UUID uuid, Vector location, boolean light) {
         }
         MobExecutor mobs = MythicBukkit.inst().getMobManager();
         if (!mobs.isActiveMob(uuid)) {
-            Entity entity = Bukkit.getEntity(uuid);
-            if (entity != null && mobs.isMythicMob(entity) && mobs.loadMythicMob(entity).isPresent()) {
-                repaired[4] = true;
-            }
+            Bukkit.getScheduler().runTask(RaycastedEntityOcclusion.instance, () -> {
+                Entity entity = Bukkit.getEntity(uuid);
+                if (entity != null && mobs.isMythicMob(entity) && mobs.loadMythicMob(entity).isPresent()) {
+                    repaired[4] = true;
+                }
+            });
         }
         return repaired;
     }
