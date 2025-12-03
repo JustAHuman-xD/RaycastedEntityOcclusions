@@ -11,11 +11,13 @@ import games.cubi.raycastedentityocclusion.manager.ConfigManager;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RaycastedEntityOcclusion extends JavaPlugin implements CommandExecutor {
@@ -55,15 +57,15 @@ public class RaycastedEntityOcclusion extends JavaPlugin implements CommandExecu
                     .redirect(buildCommand).build());
         });
 
+        Bukkit.getAsyncScheduler().runAtFixedRate(this, task -> {
+            Engine.repairMegEntities(cfg);
+        }, cfg.megRepairInterval * 50L, cfg.megRepairInterval * 50L, TimeUnit.MILLISECONDS);
+
         new BukkitRunnable() {
             @Override
             public void run() {
                 if (running.get()) {
                     return;
-                }
-
-                if (tick % cfg.megRepairInterval == 0) {
-                    Engine.getOctree().repairMegEntities(cfg);
                 }
 
                 if (tick % cfg.engineRate == 0) {

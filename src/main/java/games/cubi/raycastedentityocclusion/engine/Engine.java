@@ -59,6 +59,12 @@ public class Engine {
         plugin.getLogger().info("Skipped " + octree.getSkippedPlayers() + " players and " + octree.getSkippedInvisible() + " invisible entities.");
     }
 
+    public static void repairMegEntities(ConfigManager cfg) {
+        if (octree != null) {
+            octree.repairMegEntities(cfg);
+        }
+    }
+
     public static void runEngine(ConfigManager cfg, ChunkSnapshotManager snapMgr, RaycastedEntityOcclusion plugin) {
         if (octree == null) {
             return;
