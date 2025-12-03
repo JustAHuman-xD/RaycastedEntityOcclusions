@@ -13,7 +13,7 @@ meg-positions: # per entity positions (entity-uuid: x,y,z)
   50e8a8fb-44e7-4fa5-9c44-47045f8f55e8: 71.1667, 74.0, 30.0 # mika
   259f2cda-4b4f-46fc-a03b-c1bb06d08637: 72.9125, 74.0, 23.74 # sebastian
   88b0faf2-713c-4c17-9faf-c1d1c6e56335: 73.872, 75.5, 34.2035 # blade sharpener
-  07f40625-9596-4e82-8210-66747c447168: 86.5, 74.0, 29.5 # repairman
+  07f40625-9596-4e82-8210-66747c447168: 86.3125, 74.0, 29.5 # repairman
 
   3a4539d9-8ef4-4f35-b4f2-d2f1f189bc3f: 12.5, 77.0, 17.5 # playhosting
   6e148d34-9302-4662-b1fb-1edf76e86501: 13.5, 77.0, 7.5 # store
