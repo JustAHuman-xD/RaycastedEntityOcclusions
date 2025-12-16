@@ -1,8 +1,10 @@
 package games.cubi.raycastedentityocclusion.listener;
 
+import games.cubi.raycastedentityocclusion.RaycastedEntityOcclusion;
 import games.cubi.raycastedentityocclusion.manager.ConfigManager;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.mobs.MobExecutor;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -23,8 +25,14 @@ public class RepairListener implements Listener {
         MobExecutor mobs = MythicBukkit.inst().getMobManager();
         Entity entity = event.getRightClicked();
         UUID uuid = entity.getUniqueId();
-        if ((cfg.megPositions.containsKey(uuid) || cfg.megRotations.containsKey(uuid)) && !mobs.isActiveMob(uuid)) {
-            mobs.loadMythicMob(entity);
+        try {
+            if ((cfg.megPositions.containsKey(uuid) || cfg.megRotations.containsKey(uuid)) && !mobs.isActiveMob(uuid) && mobs.isMythicMob(entity)) {
+                mobs.loadMythicMob(entity);
+            }
+        } catch (Throwable t) {
+            RaycastedEntityOcclusion.instance.getLogger().severe("Failed to repair MythicMob for entity " + uuid + ": " + t.getMessage());
+            t.printStackTrace();
+            event.getPlayer().sendMessage(ChatColor.RED + "An error has occured, please notify an administrator, they should check the log.");
         }
     }
 }
