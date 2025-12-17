@@ -10,6 +10,7 @@ import games.cubi.raycastedentityocclusion.engine.Engine;
 import games.cubi.raycastedentityocclusion.manager.ConfigManager;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.mobs.MobExecutor;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 
@@ -17,6 +18,15 @@ import java.util.UUID;
 
 public record EntityNode(UUID uuid, Vector location, boolean light) {
     public boolean[] repairMeg(ConfigManager cfg) {
+        if (!Bukkit.isPrimaryThread()) {
+            RaycastedEntityOcclusion.instance.getLogger().severe("Attempted to repair ModelEngine entity " + uuid + " off the main thread!");
+            StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+            for (int i = Math.max(0, stackTrace.length - 10); i < stackTrace.length; i++) {
+                RaycastedEntityOcclusion.instance.getLogger().severe("    at " + stackTrace[i]);
+            }
+            return new boolean[6];
+        }
+
         boolean[] repaired = new boolean[6];
         ModeledEntity modeled = ModelEngineAPI.getModeledEntity(uuid);
         if (modeled != null) {
@@ -33,22 +43,20 @@ public record EntityNode(UUID uuid, Vector location, boolean light) {
                 repaired[2] = true;
             }
             if (cfg.megPositions.containsKey(uuid)) {
-                Engine.scheduleSyncTask(() -> {
-                    Entity entity = Engine.getEntity(uuid);
-                    if (entity != null) {
-                        Vector desired = cfg.megPositions.get(uuid);
-                        Vector current = entity.getLocation().toVector();
-                        // account for floating point precision issues
-                        if (desired.distanceSquared(current) > 0.01f) {
-                            entity.teleport(desired.toLocation(entity.getWorld()));
-                            Vector after = entity.getLocation().toVector();
-                            repaired[5] = after.distanceSquared(desired) <= 0.01f;
-                            if (!repaired[5]) {
-                                RaycastedEntityOcclusion.instance.getLogger().warning("Failed to repair ModelEngine position for entity " + uuid + ". Wanted " + desired + " but got " + after + ".");
-                            }
+                Entity entity = Engine.getEntity(uuid);
+                if (entity != null) {
+                    Vector desired = cfg.megPositions.get(uuid);
+                    Vector current = entity.getLocation().toVector();
+                    // account for floating point precision issues
+                    if (desired.distanceSquared(current) > 0.01f) {
+                        entity.teleport(desired.toLocation(entity.getWorld()));
+                        Vector after = entity.getLocation().toVector();
+                        repaired[5] = after.distanceSquared(desired) <= 0.01f;
+                        if (!repaired[5]) {
+                            RaycastedEntityOcclusion.instance.getLogger().warning("Failed to repair ModelEngine position for entity " + uuid + ". Wanted " + desired + " but got " + after + ".");
                         }
                     }
-                });
+                }
             }
             if (cfg.megRotations.containsKey(uuid)) {
                 BodyRotationController controller = modeled.getBase().getBodyRotationController();
@@ -68,17 +76,15 @@ public record EntityNode(UUID uuid, Vector location, boolean light) {
         }
         MobExecutor mobs = MythicBukkit.inst().getMobManager();
         if ((cfg.megPositions.containsKey(uuid) || cfg.megRotations.containsKey(uuid)) && !mobs.isActiveMob(uuid)) {
-            Engine.scheduleSyncTask(() -> {
-                try {
-                    Entity entity = Engine.getEntity(uuid);
-                    if (entity != null && mobs.isMythicMob(entity) && mobs.loadMythicMob(entity).isPresent()) {
-                        repaired[4] = true;
-                    }
-                } catch (Throwable t) {
-                    RaycastedEntityOcclusion.instance.getLogger().severe("Failed to repair MythicMob for entity " + uuid + ": " + t.getMessage());
-                    t.printStackTrace();
+            try {
+                Entity entity = Engine.getEntity(uuid);
+                if (entity != null && mobs.isMythicMob(entity) && mobs.loadMythicMob(entity).isPresent()) {
+                    repaired[4] = true;
                 }
-            });
+            } catch (Throwable t) {
+                RaycastedEntityOcclusion.instance.getLogger().severe("Failed to repair MythicMob for entity " + uuid + ": " + t.getMessage());
+                t.printStackTrace();
+            }
         }
         return repaired;
     }

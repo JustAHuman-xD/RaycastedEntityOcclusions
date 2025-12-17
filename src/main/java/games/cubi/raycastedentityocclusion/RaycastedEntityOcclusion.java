@@ -59,9 +59,9 @@ public class RaycastedEntityOcclusion extends JavaPlugin implements CommandExecu
                     .redirect(buildCommand).build());
         });
 
-        Bukkit.getAsyncScheduler().runAtFixedRate(this, task -> {
+        Bukkit.getScheduler().runTaskTimer(this, task -> {
             Engine.repairMegEntities(cfg);
-        }, cfg.megRepairInterval * 50L, cfg.megRepairInterval * 50L, TimeUnit.MILLISECONDS);
+        }, cfg.megRepairInterval, cfg.megRepairInterval);
 
         new BukkitRunnable() {
             @Override
