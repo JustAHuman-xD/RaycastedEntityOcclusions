@@ -13,20 +13,20 @@ public class RaycastUtil {
 
     public static boolean raycast(World world, Vector start, Vector end, int maxOccluding, boolean debug, ChunkSnapshotManager snap) {
         double totalDistanceSqr = start.distanceSquared(end);
-        Vector curr = start.clone();
+        Location startLoc = start.toLocation(world);
+        Location curr = start.toLocation(world);
         Vector dir = end.clone().subtract(start).normalize();
-        while (curr.distanceSquared(start) < totalDistanceSqr) {
+        while (curr.distanceSquared(startLoc) < totalDistanceSqr) {
             curr.add(dir);
-            Location currLoc = curr.toLocation(world);
-            if (snap.isOccluding(currLoc)) {
+            if (snap.isOccluding(curr)) {
                 if (debug) {
-                    world.spawnParticle(Particle.DUST, currLoc, 1, RED);
+                    world.spawnParticle(Particle.DUST, curr, 1, RED);
                 }
                 if (--maxOccluding < 1) {
                     return false;
                 }
             } else if (debug) {
-                world.spawnParticle(Particle.DUST, currLoc, 1, GREEN);
+                world.spawnParticle(Particle.DUST, curr, 1, GREEN);
             }
         }
         return true;

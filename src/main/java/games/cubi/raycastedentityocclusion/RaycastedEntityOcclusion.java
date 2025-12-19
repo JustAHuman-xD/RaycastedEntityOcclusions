@@ -39,7 +39,7 @@ public class RaycastedEntityOcclusion extends JavaPlugin implements CommandExecu
 
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new RepairListener(cfg), this);
-        pm.registerEvents(new CacheListener(cfg, snapMgr), this);
+        //pm.registerEvents(new CacheListener(cfg, snapMgr), this);
         if (pm.isPluginEnabled("Nexo")) {
             pm.registerEvents(new NexoListener(this, cfg), this);
         }
@@ -63,20 +63,20 @@ public class RaycastedEntityOcclusion extends JavaPlugin implements CommandExecu
             Engine.repairMegEntities(cfg);
         }, cfg.megRepairInterval, cfg.megRepairInterval);
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (running.get()) {
-                    return;
-                }
-
-                if (tick % cfg.engineRate == 0) {
-                    running.set(true);
-                    Engine.runEngine(cfg, snapMgr, RaycastedEntityOcclusion.this);
-                }
-                tick++;
-            }
-        }.runTaskTimerAsynchronously(this, 1L, 1);
+//        new BukkitRunnable() {
+//            @Override
+//            public void run() {
+//                if (running.get()) {
+//                    return;
+//                }
+//
+//                if (tick % cfg.engineRate == 0) {
+//                    running.set(true);
+//                    Engine.runEngine(cfg, snapMgr, RaycastedEntityOcclusion.this);
+//                }
+//                tick++;
+//            }
+//        }.runTaskTimerAsynchronously(this, 1L, 1);
     }
 
     public ConfigManager getConfigManager() {

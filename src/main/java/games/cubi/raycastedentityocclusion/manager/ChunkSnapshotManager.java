@@ -17,41 +17,41 @@ public class ChunkSnapshotManager {
     public ChunkSnapshotManager(RaycastedEntityOcclusion plugin) {
         cfg = plugin.getConfigManager();
 
-        for (World w : plugin.getServer().getWorlds()) {
-            for (Chunk c : w.getLoadedChunks()) {
-                takeSnapshot(c);
-            }
-        }
+//        for (World w : plugin.getServer().getWorlds()) {
+//            for (Chunk c : w.getLoadedChunks()) {
+//                takeSnapshot(c);
+//            }
+//        }
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                long now = System.currentTimeMillis();
-                int chunksRefreshed = 0;
-                int chunksToRefreshMaximum = dataMap.size() / 3;
-                for (Map.Entry<ChunkPos, ChunkData> e : dataMap.entrySet()) {
-                    if (now - e.getValue().timestamp >= cfg.snapshotRefreshInterval * 1000L) {
-                        ChunkPos pos = e.getKey();
-                        World w = Bukkit.getWorld(pos.world());
-                        if (w == null) {
-                            plugin.getLogger().warning("ChunkSnapshotManager: World " + pos.world() + " not found. Please report this on our discord (discord.cubi.games)'");
-                            continue;
-                        }
-                        e.setValue(makeSnapshot(w.getChunkAt(pos.chunk()), now));
-
-                        if (++chunksRefreshed >= chunksToRefreshMaximum) {
-                            if (cfg.debugMode) {
-                                plugin.getLogger().info("ChunkSnapshotManager: Reached maximum chunks to refresh (" + chunksToRefreshMaximum + "). Stopping refresh.");
-                            }
-                            break; // Stop refreshing if we reached the maximum
-                        }
-                    }
-                }
-                if (cfg.debugMode) {
-                    plugin.getLogger().info("ChunkSnapshotManager: Refreshed " + chunksRefreshed + " chunks out of " + chunksToRefreshMaximum + " maximum.");
-                }
-            }
-        }.runTaskTimerAsynchronously(plugin, cfg.snapshotRefreshInterval, cfg.snapshotRefreshInterval);
+//        new BukkitRunnable() {
+//            @Override
+//            public void run() {
+//                long now = System.currentTimeMillis();
+//                int chunksRefreshed = 0;
+//                int chunksToRefreshMaximum = dataMap.size() / 3;
+//                for (Map.Entry<ChunkPos, ChunkData> e : dataMap.entrySet()) {
+//                    if (now - e.getValue().timestamp >= cfg.snapshotRefreshInterval * 1000L) {
+//                        ChunkPos pos = e.getKey();
+//                        World w = Bukkit.getWorld(pos.world());
+//                        if (w == null) {
+//                            plugin.getLogger().warning("ChunkSnapshotManager: World " + pos.world() + " not found. Please report this on our discord (discord.cubi.games)'");
+//                            continue;
+//                        }
+//                        e.setValue(makeSnapshot(w.getChunkAt(pos.chunk()), now));
+//
+//                        if (++chunksRefreshed >= chunksToRefreshMaximum) {
+//                            if (cfg.debugMode) {
+//                                plugin.getLogger().info("ChunkSnapshotManager: Reached maximum chunks to refresh (" + chunksToRefreshMaximum + "). Stopping refresh.");
+//                            }
+//                            break; // Stop refreshing if we reached the maximum
+//                        }
+//                    }
+//                }
+//                if (cfg.debugMode) {
+//                    plugin.getLogger().info("ChunkSnapshotManager: Refreshed " + chunksRefreshed + " chunks out of " + chunksToRefreshMaximum + " maximum.");
+//                }
+//            }
+//        }.runTaskTimerAsynchronously(plugin, cfg.snapshotRefreshInterval, cfg.snapshotRefreshInterval);
     }
 
     public void onChunkLoad(Chunk c) {
