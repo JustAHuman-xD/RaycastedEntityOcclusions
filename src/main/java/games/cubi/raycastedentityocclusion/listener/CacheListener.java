@@ -35,12 +35,12 @@ public class CacheListener implements Listener {
         ))) {
             Engine.getOctree().insert(cfg, chunk);
         }
-        manager.onChunkLoad(chunk);
+        //manager.onChunkLoad(chunk);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChunkUnload(ChunkUnloadEvent e) {
-        manager.onChunkUnload(e.getChunk());
+        //manager.onChunkUnload(e.getChunk());
     }
 
 }
